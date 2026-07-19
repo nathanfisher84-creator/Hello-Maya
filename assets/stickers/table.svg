@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 210">
+  <defs>
+    <linearGradient id="cloth" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#eae7e2"/>
+    </linearGradient>
+    <linearGradient id="top" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#f2f0ec"/>
+    </linearGradient>
+  </defs>
+  <!-- draped tablecloth -->
+  <path d="M14 52 Q170 38 326 52 L322 196 Q317 202 310 200 L30 200 Q23 202 18 196 Z"
+        fill="url(#cloth)" stroke="#c9c4bc" stroke-width="2.5"/>
+  <!-- table top surface -->
+  <path d="M14 52 Q170 38 326 52 Q328 62 322 66 Q170 54 18 66 Q12 62 14 52 Z"
+        fill="url(#top)" stroke="#c9c4bc" stroke-width="2.5"/>
+  <!-- soft fold lines -->
+  <g stroke="#d9d5cf" stroke-width="2" fill="none" opacity="0.8" stroke-linecap="round">
+    <path d="M70 70 Q66 130 68 192"/>
+    <path d="M135 66 Q133 130 134 196"/>
+    <path d="M205 66 Q207 130 206 196"/>
+    <path d="M270 70 Q274 130 272 192"/>
+  </g>
+</svg>
