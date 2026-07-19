@@ -1,0 +1,7 @@
+{
+  "name": "hello-maya-events",
+  "private": true,
+  "scripts": {
+    "build": "node build.js"
+  }
+}
