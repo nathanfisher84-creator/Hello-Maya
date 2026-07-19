@@ -13,6 +13,34 @@
 
   $("#year").textContent = new Date().getFullYear();
 
+  /* ── instagram carousel ── */
+  const igTrack = $("#igTrack");
+  const igUrl = `https://www.instagram.com/${BUSINESS.instagram}/`;
+  if (INSTAGRAM_POSTS.length) {
+    igTrack.classList.add("ig__track--embeds");
+    igTrack.innerHTML = INSTAGRAM_POSTS.map(url => {
+      const clean = url.split("?")[0].replace(/\/?$/, "/");
+      return `<div class="ig__tile ig__tile--embed">
+        <iframe src="${clean}embed/" loading="lazy" frameborder="0" scrolling="no" allowtransparency="true" title="Instagram post"></iframe>
+      </div>`;
+    }).join("");
+  } else {
+    igTrack.innerHTML = INSTAGRAM_PHOTOS.map(src => `
+      <a class="ig__tile" href="${igUrl}" target="_blank" rel="noopener" aria-label="View on Instagram">
+        <img src="${src}" alt="Hello Maya Events on Instagram" loading="lazy">
+        <span class="ig__overlay">
+          <svg viewBox="0 0 24 24" width="30" height="30"><rect x="2" y="2" width="20" height="20" rx="5.5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4.7" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.3" cy="6.7" r="1.35" fill="currentColor"/></svg>
+          View on Instagram
+        </span>
+      </a>`).join("");
+  }
+  const igStep = () => {
+    const tile = igTrack.querySelector(".ig__tile");
+    return tile ? tile.getBoundingClientRect().width + 16 : 300;
+  };
+  $("#igPrev").addEventListener("click", () => igTrack.scrollBy({ left: -igStep(), behavior: "smooth" }));
+  $("#igNext").addEventListener("click", () => igTrack.scrollBy({ left: igStep(), behavior: "smooth" }));
+
   /* ── render packages section ── */
   const grid = $("#packagesGrid");
   grid.innerHTML = PACKAGES.map(p => `

@@ -104,6 +104,27 @@ button{font-family:inherit;cursor:pointer}
 .gallery img{border-radius:16px;aspect-ratio:4/5;object-fit:cover;width:100%;transition:.35s;cursor:pointer}
 .gallery img:hover{transform:scale(1.03);box-shadow:var(--shadow)}
 
+/* ── instagram ── */
+.nav__ig{display:flex;align-items:center;color:var(--rose-deep);transition:.2s;margin-left:.2rem}
+.nav__ig:hover{color:var(--rose);transform:scale(1.1)}
+.btn--ig{display:inline-flex;align-items:center;gap:.55rem;background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);color:#fff;border:none}
+.btn--ig:hover{transform:translateY(-2px);box-shadow:0 10px 24px -10px rgba(204,35,102,.6)}
+.ig{position:relative}
+.ig__track{display:flex;gap:1rem;overflow-x:auto;scroll-snap-type:x mandatory;padding:.3rem .2rem 1rem;scrollbar-width:none}
+.ig__track::-webkit-scrollbar{display:none}
+.ig__tile{position:relative;flex:0 0 min(280px,72vw);aspect-ratio:1;border-radius:16px;overflow:hidden;scroll-snap-align:start;background:var(--cream-2)}
+.ig__tile img{width:100%;height:100%;object-fit:cover;transition:.35s}
+.ig__tile:hover img{transform:scale(1.05)}
+.ig__overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;background:rgba(61,35,50,.55);color:#fff;font-size:.85rem;letter-spacing:.05em;opacity:0;transition:.3s}
+.ig__tile:hover .ig__overlay{opacity:1}
+.ig__tile--embed{flex:0 0 min(330px,80vw);aspect-ratio:auto;height:420px;background:#fff}
+.ig__tile--embed iframe{width:100%;height:100%;border:0}
+.ig__arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:5;width:42px;height:42px;border-radius:50%;border:none;background:var(--white);color:var(--rose-deep);font-size:1.6rem;line-height:1;box-shadow:var(--shadow);transition:.2s;display:flex;align-items:center;justify-content:center;padding-bottom:4px}
+.ig__arrow:hover{background:var(--rose);color:#fff}
+.ig__arrow--prev{left:-8px}
+.ig__arrow--next{right:-8px}
+.ig__cta{text-align:center;margin-top:1.2rem}
+
 /* ── visualizer ── */
 .viz{display:grid;grid-template-columns:280px 1fr;gap:1.4rem;align-items:start}
 .viz__palette{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:1.3rem;position:sticky;top:84px}

@@ -10,6 +10,28 @@ const BUSINESS = {
   deliveryFeeDubai: 150,              // AED, outside Damac Hills 2
 };
 
+/* Instagram carousel.
+   To show LIVE embedded Instagram posts: open a post on instagram.com,
+   copy its address (looks like https://www.instagram.com/p/ABC123xyz/)
+   and paste it into INSTAGRAM_POSTS below. With one or more links there,
+   the carousel switches from local photos to real Instagram embeds.
+   Example:
+     const INSTAGRAM_POSTS = [
+       "https://www.instagram.com/p/ABC123xyz/",
+       "https://www.instagram.com/p/DEF456uvw/",
+     ]; */
+const INSTAGRAM_POSTS = [];
+
+/* Fallback tiles (used while INSTAGRAM_POSTS is empty) */
+const INSTAGRAM_PHOTOS = [
+  "assets/img/setup-flowerwall-table.jpg",
+  "assets/img/wall-blush.jpg",
+  "assets/img/setup-blue-runner.jpg",
+  "assets/img/setup-kids-pink.jpg",
+  "assets/img/wall-whiterose.jpg",
+  "assets/img/setup-kids-safari.jpg",
+];
+
 const PACKAGES = [
   {
     id: "pkg1", name: "Package 1", price: 299,
