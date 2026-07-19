@@ -34,26 +34,24 @@ const INSTAGRAM_PHOTOS = [
 
 const PACKAGES = [
   {
-    id: "pkg1", name: "Package 1", price: 299,
-    tag: "Essentials",
-    items: ["16 × white Chiavari chairs", "2 × rectangle tables with white covers"],
+    id: "pkg1", name: "The Essentials", price: 299,
+    items: ["16 × white Chiavari chairs", "2 × draped rectangle tables"],
   },
   {
-    id: "pkg2", name: "Package 2", price: 349,
-    tag: "Styled",
-    items: ["16 × white Chiavari chairs", "2 × rectangle tables with white covers", "Basic table decor"],
+    id: "pkg2", name: "The Styled", price: 349,
+    items: ["16 × white Chiavari chairs", "2 × draped rectangle tables", "Table décor"],
   },
   {
-    id: "pkg3", name: "Package 3", price: 499,
-    tag: "Most popular", featured: true,
-    items: ["16 × white Chiavari chairs", "2 × rectangle tables with white covers", "Basic table decor",
-            "Dinner & dessert plates", "Cutlery set", "Plastic wine cups", "Table napkins with rings"],
+    id: "pkg3", name: "The Signature", price: 499,
+    tag: "Most requested", featured: true,
+    items: ["16 × white Chiavari chairs", "2 × draped rectangle tables", "Table décor",
+            "Dinner & dessert plates", "Cutlery set", "Wine cups", "Napkins with rings"],
   },
   {
-    id: "pkg4", name: "Package 4", price: 999,
-    tag: "The full experience",
-    items: ["16 × white Chiavari chairs", "2 × rectangle tables with white covers", "Basic table decor",
-            "Dinner & dessert plates", "Cutlery set", "Plastic wine cups", "Table napkins with rings",
+    id: "pkg4", name: "The Grand", price: 999,
+    tag: "With flower wall",
+    items: ["16 × white Chiavari chairs", "2 × draped rectangle tables", "Table décor",
+            "Dinner & dessert plates", "Cutlery set", "Wine cups", "Napkins with rings",
             "Flower wall backdrop"],
   },
 ];

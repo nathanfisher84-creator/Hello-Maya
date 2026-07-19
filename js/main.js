@@ -49,7 +49,7 @@
       <h3>${p.name}</h3>
       <div class="package__price">${AED(p.price)}<small> / event</small></div>
       <ul>${p.items.map(i => `<li>${i}</li>`).join("")}</ul>
-      <button class="btn btn--ghost" data-pick-pkg="${p.id}">Choose ${p.name}</button>
+      <button class="btn btn--ghost" data-pick-pkg="${p.id}">Select</button>
     </div>`).join("");
 
   grid.addEventListener("click", e => {
@@ -69,10 +69,10 @@
   const itemsBox = $("#bookingItems");
   itemsBox.innerHTML = `
     <div class="bk-group">
-      <h4>Packages (pick one, optional)</h4>
+      <h4>Collections (choose one, optional)</h4>
       <label class="bk-pkg" data-pkg="">
         <input type="radio" name="bkPkg" value="" checked>
-        <div><div class="bk-pkg__name">No package</div><div class="bk-pkg__detail">I'll pick individual items below</div></div>
+        <div><div class="bk-pkg__name">No package</div><div class="bk-pkg__detail">I'll choose individual pieces below</div></div>
       </label>
       ${PACKAGES.map(p => `
         <label class="bk-pkg" data-pkg="${p.id}">
@@ -83,7 +83,7 @@
         </label>`).join("")}
     </div>
     <div class="bk-group">
-      <h4>Individual items &amp; add-ons</h4>
+      <h4>Individual pieces &amp; additions</h4>
       ${ITEMS.map(i => `
         <div class="bk-row">
           <div class="bk-row__info">
@@ -157,7 +157,7 @@
     const lines = currentLines();
     const delivery = locationSel.value === "dubai" ? BUSINESS.deliveryFeeDubai : 0;
     if (!lines.length) {
-      summaryBox.innerHTML = `<span class="empty">Nothing selected yet — choose a package or items above.</span>`;
+      summaryBox.innerHTML = `<span class="empty">Nothing selected yet — choose a collection or pieces above.</span>`;
       return;
     }
     const total = lines.reduce((s, l) => s + l.amount, 0) + delivery;
@@ -178,7 +178,7 @@
     e.preventDefault();
     const lines = currentLines();
     if (!lines.length) {
-      alert("Please choose a package or at least one item first 🌸");
+      alert("Please choose a package or at least one item first.");
       return;
     }
     const delivery = locationSel.value === "dubai" ? BUSINESS.deliveryFeeDubai : 0;

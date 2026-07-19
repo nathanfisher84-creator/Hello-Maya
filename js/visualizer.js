@@ -132,7 +132,7 @@
     ctx.save();
     ctx.translate(o.x, o.y);
     ctx.rotate(o.rot);
-    ctx.strokeStyle = "#c2557a";
+    ctx.strokeStyle = "#8c3a55";
     ctx.lineWidth = px;
     ctx.setLineDash([6 * px, 4 * px]);
     ctx.strokeRect(-w / 2, -h / 2, w, h);
@@ -141,7 +141,7 @@
     const hnd = corner(o, 1, 1);
     ctx.beginPath();
     ctx.arc(hnd.x, hnd.y, 9 * px, 0, Math.PI * 2);
-    ctx.fillStyle = "#c2557a";
+    ctx.fillStyle = "#8c3a55";
     ctx.fill();
     ctx.lineWidth = 2.5 * px;
     ctx.setLineDash([]);
@@ -274,7 +274,7 @@
   });
 
   $("#vizDownload").addEventListener("click", () => {
-    if (!state.started) { alert("Upload a photo or start a blank design first 🌸"); return; }
+    if (!state.started) { alert("Upload a photo or start a blank design first."); return; }
     render(true);                       // draw without selection outline
     const a = document.createElement("a");
     a.download = "my-hello-maya-event.png";
@@ -286,7 +286,7 @@
   /* ── hand the design's item counts to the booking form ── */
   $("#vizToBooking").addEventListener("click", () => {
     if (!state.objects.length) {
-      alert("Add some items to your design first 🌸");
+      alert("Add some items to your design first.");
       return;
     }
     const counts = {};
