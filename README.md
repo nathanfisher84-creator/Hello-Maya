@@ -36,7 +36,18 @@ Just open `index.html` in a browser, or serve the folder:
 python3 -m http.server 8000
 ```
 
-## Deploying on GitHub Pages
+## Deploying on Vercel (recommended)
+
+The repo is Vercel-ready (`vercel.json` + `build.js` are already configured):
+
+1. Go to [vercel.com/new](https://vercel.com/new) and sign in.
+2. Import the **Hello-Maya** GitHub repository.
+3. Click **Deploy** — no settings needed.
+
+Every push to the connected branch then auto-deploys. You can add a custom
+domain (e.g. `hellomayaevents.com`) under Project → Settings → Domains.
+
+## Deploying on GitHub Pages (alternative)
 
 Repo Settings → Pages → deploy from branch → select the branch, root folder.
 The site is fully static so it works out of the box.
