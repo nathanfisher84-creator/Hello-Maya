@@ -5,7 +5,7 @@
 
 const BUSINESS = {
   name: "Hello Maya Events",
-  whatsapp: "971585256044",           // international format, no +
+  whatsapp: "971569773234",           // international format, no +
   instagram: "hellomaya_dxb",
   deliveryFeeDubai: 150,              // AED, outside Damac Hills 2
 };

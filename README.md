@@ -7,7 +7,7 @@ table & chair rentals for birthdays, baby showers, brunches and kids' parties.
 
 - **Online booking** — visitors pick a package and/or individual items, choose
   their event date, start time and rental duration, and the request is sent
-  straight to the business WhatsApp (058 525 6044) as a pre-filled message with
+  straight to the business WhatsApp (056 977 3234) as a pre-filled message with
   an estimated total. No backend or payment processing needed.
 - **Event visualizer** — visitors upload a photo of their own space (garden,
   majlis, venue) and drag flower walls, tables and chairs into it: move,
