@@ -60,8 +60,8 @@ const PACKAGES = [
    NOTE for owner: flower wall price (675) is from your flyer; the
    per-piece prices below are placeholders — change them to your real rates. */
 const ITEMS = [
-  { id: "wall-blush",  name: "Flower Wall — Blush Pink",        price: 675, unit: "wall",  max: 2,  vizKey: "wallBlush" },
-  { id: "wall-white",  name: "Flower Wall — White Rose Garden", price: 675, unit: "wall",  max: 2,  vizKey: "wallWhite" },
+  { id: "wall-blush",  name: "Flower Wall — Blush Pink",        price: 675, unit: "wall",  max: 1,  vizKey: "wallBlush" },
+  { id: "wall-white",  name: "Flower Wall — White Rose Garden", price: 675, unit: "wall",  max: 1,  vizKey: "wallWhite" },
   { id: "table-adult", name: "Rectangle table + white cover",   price: 75,  unit: "table", max: 20, vizKey: "table" },
   { id: "chair-adult", name: "White Chiavari chair (adult)",    price: 15,  unit: "chair", max: 100, vizKey: "chair" },
   { id: "table-kids",  name: "Kids' table + cover",             price: 55,  unit: "table", max: 20, vizKey: "kidsTable" },
