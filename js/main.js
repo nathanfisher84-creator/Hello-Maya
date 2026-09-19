@@ -92,7 +92,7 @@
           </div>
           <div class="bk-qty">
             <button type="button" data-dec="${i.id}" aria-label="Less">−</button>
-            <input type="number" id="qty-${i.id}" value="0" min="0" max="${i.max}" readonly>
+            <input type="number" id="qty-${i.id}" data-qty="${i.id}" value="0" min="0" max="${i.max}" inputmode="numeric">
             <button type="button" data-inc="${i.id}" aria-label="More">+</button>
           </div>
         </div>`).join("")}
@@ -106,6 +106,25 @@
   });
   itemsBox.addEventListener("change", e => {
     if (e.target.name === "bkPkg") setPackage(e.target.value || null);
+  });
+
+  /* typed quantities: update live, clamp to the max, tidy up on blur */
+  itemsBox.addEventListener("input", e => {
+    const id = e.target.dataset ? e.target.dataset.qty : null;
+    if (!id) return;
+    const item = ITEMS.find(i => i.id === id);
+    let v = parseInt(e.target.value, 10);
+    if (isNaN(v) || v < 0) v = 0;
+    if (v > item.max) { v = item.max; e.target.value = v; }
+    state.qty[id] = v;
+    renderSummary();
+  });
+  itemsBox.addEventListener("focusout", e => {
+    const id = e.target.dataset ? e.target.dataset.qty : null;
+    if (id) e.target.value = state.qty[id];
+  });
+  itemsBox.addEventListener("focusin", e => {
+    if (e.target.dataset && e.target.dataset.qty) e.target.select();
   });
 
   function changeQty(id, delta) {
