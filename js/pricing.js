@@ -26,7 +26,7 @@
    * extraWalls are walls beyond the package's included wall. They are not
    * copied into extras until the customer confirms them.
    */
-  function designToExtras(catalog, packageId, designCounts) {
+  function designToExtras(catalog, packageId, designCounts, preferredWallId) {
     const pkg = packageById(catalog.packages, packageId);
     const includes = Object.assign({}, (pkg && pkg.includes) || {});
     let credit = wallCredit(pkg);
@@ -34,6 +34,7 @@
     const capped = [];
     let wallColour = null;
     const extraWalls = [];
+    const wallRows = [];
 
     catalog.items.forEach(item => {
       const requested = Math.max(0, designCounts[item.id] || 0);
@@ -48,30 +49,44 @@
       }
 
       if (isWallItem(item)) {
-        const covered = Math.min(kept, credit);
-        credit -= covered;
-        if (covered && !wallColour) wallColour = item.id;
-        const remainder = kept - covered;
-        /* A further wall is held for confirmation only when the package
-           already includes one. Otherwise the wall is a normal product. */
-        if (wallCredit(pkg) > 0) {
-          extras[item.id] = 0;
-          if (remainder > 0) {
-            extraWalls.push({
-              id: item.id,
-              qty: remainder,
-              name: item.name,
-              amount: remainder * item.price,
-            });
-          }
-        } else {
-          extras[item.id] = remainder;
-        }
+        extras[item.id] = 0;
+        wallRows.push({ item, kept });
         return;
       }
 
       const covered = Math.min(kept, includes[item.id] || 0);
       extras[item.id] = kept - covered;
+    });
+
+    /* Prefer the colour already chosen on the package, then catalogue order. */
+    const ordered = [];
+    if (preferredWallId) {
+      const preferred = wallRows.find(row => row.item.id === preferredWallId && row.kept > 0);
+      if (preferred) ordered.push(preferred);
+    }
+    wallRows.forEach(row => {
+      if (!ordered.includes(row)) ordered.push(row);
+    });
+
+    ordered.forEach(({ item, kept }) => {
+      const covered = Math.min(kept, credit);
+      credit -= covered;
+      if (covered && !wallColour) wallColour = item.id;
+      const remainder = kept - covered;
+      /* A further wall is held for confirmation only when the package
+         already includes one. Otherwise the wall is a normal product. */
+      if (wallCredit(pkg) > 0) {
+        if (remainder > 0) {
+          extraWalls.push({
+            id: item.id,
+            qty: remainder,
+            name: item.name,
+            amount: remainder * item.price,
+          });
+        }
+      } else {
+        extras[item.id] = remainder;
+      }
     });
 
     return { extras, wallColour, extraWalls, capped };
@@ -87,7 +102,12 @@
   function buildQuote(catalog, selection) {
     const mode = selection.countMode || "extras";
     if (mode === "design") {
-      const plan = designToExtras(catalog, selection.packageId, selection.counts || {});
+      const plan = designToExtras(
+        catalog,
+        selection.packageId,
+        selection.counts || {},
+        selection.wallColour
+      );
       const counts = Object.assign({}, plan.extras);
       if (selection.extraWallConfirmed) {
         plan.extraWalls.forEach(wall => {

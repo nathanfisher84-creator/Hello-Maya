@@ -399,7 +399,7 @@
     if (choosing) return;
     choosing = true;
     try {
-    const plan = HelloMayaPricing.designToExtras(catalog, state.packageId, counts);
+    const plan = HelloMayaPricing.designToExtras(catalog, state.packageId, counts, state.wallColour);
     const pkg = currentPackage();
     if (plan.extraWalls.length && pkg) {
       const includedName = plan.wallColour ? itemById(plan.wallColour).name : "one flower wall";

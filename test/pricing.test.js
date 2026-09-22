@@ -95,6 +95,19 @@ assert.strictEqual(twoWalls.total, 1199 + 150);
 assert.strictEqual(twoWalls.unconfirmedWalls.length, 1);
 assert.strictEqual(twoWalls.unconfirmedWalls[0].amount, 675);
 
+/* If White Rose was already the included colour, it stays included and Blush is the extra. */
+const preferred = buildQuote(catalog, {
+  packageId: "pkg4",
+  counts: { "wall-blush": 1, "wall-white": 1 },
+  countMode: "design",
+  location: "dubai",
+  extraWallConfirmed: false,
+  wallColour: "wall-white",
+});
+assert.ok(preferred.lines.some(line => line.kind === "included" && /White Rose/.test(line.label)));
+assert.strictEqual(preferred.unconfirmedWalls[0].id, "wall-blush");
+assert.strictEqual(preferred.total, 1199 + 150);
+
 const twoWallsYes = quoteDesign("pkg4", { "wall-blush": 1, "wall-white": 1 }, "dubai", true);
 assert.strictEqual(twoWallsYes.total, 1199 + 675 + 150);
 assert.strictEqual(twoWallsYes.unconfirmedWalls.length, 0);
