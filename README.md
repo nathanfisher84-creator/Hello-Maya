@@ -7,7 +7,7 @@ table & chair rentals for birthdays, baby showers, brunches and kids' parties.
 
 - **Availability enquiry** — visitors pick a package and/or individual items,
   choose their event date, start time and rental duration, and send a
-  pre-filled WhatsApp message (056 977 3234) with an estimated total. The
+  pre-filled WhatsApp message (+971 58 525 6044) with an estimated total. The
   message does not reserve the date: enquiry, then a confirmed quote, then a
   deposit, then booking confirmation. No payment is taken on the site.
 - **Event visualizer** — visitors upload a photo of their own space (garden,

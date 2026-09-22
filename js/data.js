@@ -6,7 +6,8 @@
 
 const BUSINESS = {
   name: "Hello Maya Events",
-  whatsapp: "971569773234",           // international format, no +
+  whatsapp: "971585256044",           // international format, no +
+  whatsappDisplay: "+971 58 525 6044",
   instagram: "hellomaya_dxb",
   deliveryFeeDubai: 150,              // AED, outside Damac Hills 2
   /* One sentence, used everywhere a price is shown. Do not paraphrase

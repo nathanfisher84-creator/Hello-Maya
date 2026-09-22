@@ -27,6 +27,13 @@
   document.querySelectorAll("[data-response-copy]").forEach(el => {
     el.textContent = BUSINESS.responseNote;
   });
+  document.querySelectorAll('a[href^="https://wa.me/"]').forEach(link => {
+    const extra = link.search || "";
+    link.href = `https://wa.me/${BUSINESS.whatsapp}${extra}`;
+  });
+  document.querySelectorAll("[data-whatsapp-display]").forEach(el => {
+    el.textContent = BUSINESS.whatsappDisplay;
+  });
   const adultFrom = Math.min(...PACKAGES.filter(p => !p.children).map(p => p.price));
   const heroFrom = $("#heroFromPrice");
   if (heroFrom) heroFrom.textContent = AED(adultFrom);
