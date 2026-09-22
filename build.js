@@ -13,6 +13,7 @@ const FILES = [
   "index.html",
   "css/style.css",
   "js/data.js",
+  "js/pricing.js",
   "js/main.js",
   "js/visualizer.js",
   "assets/stickers/chair.svg",
