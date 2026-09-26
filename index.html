@@ -36,6 +36,25 @@
 </head>
 <body>
 
+<!-- ══════════ TEMPORARY PAUSE ══════════
+     Full-screen notice. It removes itself automatically once the date in
+     data-until has passed. To end the pause early, delete this block. -->
+<div class="pause" id="pause" role="dialog" aria-modal="true" aria-labelledby="pauseTitle" data-until="2026-10-03T09:00:00+04:00">
+  <div class="pause__inner">
+    <div class="pause__brand">Hello&nbsp;Maya<span>events</span></div>
+    <h2 id="pauseTitle">Hello Maya is currently unavailable</h2>
+    <p>We're taking a short break and aren't taking enquiries right now. We'll be back on Saturday 3 October.</p>
+    <p class="pause__ig">Follow <a href="https://www.instagram.com/hellomaya_dxb/" target="_blank" rel="noopener">@hellomaya_dxb</a> for updates.</p>
+  </div>
+</div>
+<script>
+(function () {
+  var el = document.getElementById("pause");
+  if (el && Date.now() >= Date.parse(el.dataset.until)) el.remove();
+  else document.documentElement.classList.add("is-paused");
+})();
+</script>
+
 <!-- ══════════ NAV ══════════ -->
 <header class="nav" id="top">
   <a class="nav__logo" href="#top">Hello&nbsp;Maya<span>events</span></a>

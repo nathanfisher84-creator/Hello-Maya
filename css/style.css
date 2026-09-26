@@ -314,3 +314,15 @@ form label.bk-accept input{width:18px;height:18px;margin-top:.2rem;flex:0 0 auto
   .hero__card span{font-size:1.25rem}
   .hero h1{font-size:2.45rem}
 }
+
+/* ── temporary pause notice ── */
+.is-paused,.is-paused body{overflow:hidden}
+.pause{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:1.5rem;background:var(--bg);text-align:center}
+.pause__inner{max-width:560px}
+.pause__brand{font-family:var(--serif);font-size:1.8rem;font-weight:600;color:var(--ink);margin-bottom:2.2rem}
+.pause__brand span{display:block;font-family:var(--sans);font-size:.6rem;letter-spacing:.55em;text-transform:uppercase;color:var(--gold);margin-top:-2px}
+.pause h2{font-size:clamp(2.3rem,6vw,3.6rem);color:var(--ink);margin-bottom:1.2rem}
+.pause p{color:var(--ink-soft);font-size:1.05rem}
+.pause__ig{margin-top:1.6rem;font-size:.9rem!important}
+.pause__ig a{color:var(--rose-deep);text-decoration:underline;text-underline-offset:.15em}
+.is-paused .wa-float{display:none}
