@@ -13,6 +13,10 @@ const BUSINESS = {
   /* One sentence, used everywhere a price is shown. Do not paraphrase
      on the page — the site copies this string into every delivery line. */
   deliveryRule: "Free delivery in Damac Hills 2. AED 150 elsewhere in Dubai. That fee covers one delivery and one collection, so collection is not charged again. We dismantle and collect at the end of the rental.",
+  /* Short form for price cards. Must say the same thing as deliveryRule. */
+  deliveryShort: "Free delivery in Damac Hills 2 · AED 150 elsewhere in Dubai",
+  site: "https://www.hellomayaevents.com/",
+  area: ["Dubai", "Damac Hills 2"],
   rentalNote: "Up to 8 hours of rental, starting once setup is complete.",
   vatNote: "Prices may exclude VAT — confirmed on your quote.",
   responseNote: "We usually reply within one business day, between 10:00 and 18:00 Gulf Standard Time. A message outside those hours is answered the next working day.",
@@ -32,20 +36,21 @@ const INSTAGRAM_POSTS = [];
 
 /* Fallback tiles (used while INSTAGRAM_POSTS is empty) */
 const INSTAGRAM_PHOTOS = [
-  "assets/img/setup-flowerwall-table.jpg",
-  "assets/img/wall-blush.jpg",
-  "assets/img/setup-blue-runner.jpg",
-  "assets/img/setup-kids-pink.jpg",
-  "assets/img/wall-whiterose.jpg",
-  "assets/img/setup-kids-safari.jpg",
+  { src: "assets/img/setup-flowerwall-table.jpg", alt: "Blush flower wall behind a styled table with white Chiavari chairs" },
+  { src: "assets/img/wall-blush.jpg", alt: "Blush Pink flower wall rental in Dubai" },
+  { src: "assets/img/setup-blue-runner.jpg", alt: "Long table with a blue runner and white Chiavari chairs" },
+  { src: "assets/img/setup-kids-pink.jpg", alt: "Pink children's party table with kids' Chiavari chairs" },
+  { src: "assets/img/wall-whiterose.jpg", alt: "White Rose Garden flower wall backdrop" },
+  { src: "assets/img/setup-kids-safari.jpg", alt: "Safari-themed children's party table setup" },
 ];
 
-/* Space notes are placeholders Nathan can edit. They are not measured
-   centimetres. Replace the text once the pieces have been measured. */
+/* Space notes shown to customers. The pieces have not been measured yet:
+   once they are, replace "confirmed on your quote" with the real
+   width × height in centimetres. */
 const SPACE = {
-  flowerWall: "Space note (placeholder — edit in js/data.js): allow clear floor for a freestanding backdrop. Exact width and height are confirmed on your quote.",
-  tableAdult: "Space note (placeholder — edit in js/data.js): adult rectangle table with a white cover. Our 16-chair collections use two of these. Exact centimetres are confirmed on your quote.",
-  tableKids: "Space note (placeholder — edit in js/data.js): smaller children's rectangle table with a cover. Exact size is confirmed on your quote.",
+  flowerWall: "Each wall is freestanding and needs clear, level floor space. We confirm the exact width and height with your quote.",
+  tableAdult: "Adult rectangle table with a white cover. The 16-chair collections use two. Exact size confirmed with your quote.",
+  tableKids: "Smaller children's rectangle table with a cover. Exact size confirmed with your quote.",
 };
 
 /* Individual à-la-carte items.
@@ -125,7 +130,8 @@ const LITTLE_CELEBRATION_INCLUDES = { "table-kids": 2, "chair-kids": 8 };
    described in the card copy; they are not separate catalogue items. */
 const ADULT_FURNITURE = { "chair-adult": 16, "table-adult": 2 };
 
-const KIDS_AGE_NOTE = "Age suitability (placeholder — edit in js/data.js): child-sized Chiavari chairs and a lower table. Tell us the children's ages when you enquire and we will confirm the fit before you pay a deposit.";
+/* Age range not yet set. Once known, state it here (e.g. "ages 2 to 8"). */
+const KIDS_AGE_NOTE = "Child-sized Chiavari chairs and a lower table. Tell us the children's ages when you enquire and we'll confirm the fit before you pay a deposit.";
 
 const TABLE_DECOR = "Table décor for both tables: runners, florals and finishing touches, curated to your palette and theme.";
 const TABLE_DECOR_NOTE = "Décor is the runners, florals and finishing touches from our styling service. It is not a separate product list. Share a palette or theme (for example blush or ivory) and we confirm what we can match on the quote.";
@@ -143,7 +149,6 @@ const PACKAGES = [
       "16 × white Chiavari chairs with cushioned seats",
       "2 × adult rectangle tables with crisp white covers",
     ],
-    notes: [SPACE.tableAdult],
   },
   {
     id: "pkg2",
@@ -156,7 +161,7 @@ const PACKAGES = [
       "2 × adult rectangle tables with crisp white covers",
       TABLE_DECOR,
     ],
-    notes: [TABLE_DECOR_NOTE, SPACE.tableAdult],
+    notes: [TABLE_DECOR_NOTE],
   },
   {
     id: "pkg3",
@@ -172,7 +177,7 @@ const PACKAGES = [
       TABLE_DECOR,
       PLACE_SETTINGS,
     ],
-    notes: [TABLE_DECOR_NOTE, PLACE_SETTINGS_NOTE, SPACE.tableAdult],
+    notes: [TABLE_DECOR_NOTE, PLACE_SETTINGS_NOTE],
   },
   {
     id: "pkg4",
@@ -192,8 +197,6 @@ const PACKAGES = [
       "The wall included here is one backdrop, in the colour you choose. A second wall is not included. If you want both colours, we ask before adding the other at the standalone wall price.",
       TABLE_DECOR_NOTE,
       PLACE_SETTINGS_NOTE,
-      SPACE.flowerWall,
-      SPACE.tableAdult,
     ],
   },
   {
@@ -209,9 +212,9 @@ const PACKAGES = [
     items: [
       "1 × children's table with cover",
       "4 × children's Chiavari chairs with cushioned seats",
-      "Seats 4 children (one chair each — edit the chair count in js/data.js if the table should be set differently)",
+      "Seats 4 children",
     ],
-    notes: [KIDS_AGE_NOTE, SPACE.tableKids],
+    notes: [KIDS_AGE_NOTE],
   },
   {
     id: "pkg-kids-8",
@@ -226,21 +229,17 @@ const PACKAGES = [
     items: [
       "2 × children's tables with covers",
       "8 × children's Chiavari chairs with cushioned seats",
-      "Seats 8 children (one chair each — edit the chair count in js/data.js if the tables should be set differently)",
+      "Seats 8 children",
     ],
-    notes: [
-      KIDS_AGE_NOTE,
-      SPACE.tableKids,
-      "Priced as our children's chair and table rates added together, with the same delivery rule as every other collection.",
-    ],
+    notes: [KIDS_AGE_NOTE],
   },
 ];
 
 /* Site policy Nathan can edit. Working defaults for a small Dubai rental,
-   not legal advice. Shown before an enquiry is sent. */
+   not legal advice — have them checked before relying on them.
+   Shown before an enquiry is sent. */
 const POLICY = {
   heading: "Rental terms",
-  editableNote: "Site policy — edit this text in js/data.js. These are working defaults for a small Dubai rental business, not legal advice.",
   points: [
     {
       title: "How a date is held",
@@ -272,6 +271,60 @@ const POLICY = {
     },
   ],
 };
+
+/* Frequently asked questions. Shown on the page and published as
+   FAQPage structured data for Google and AI answer engines, so answers
+   must stay true. Prices are read from ITEMS and PACKAGES above. */
+const FAQ = (() => {
+  const aed = n => "AED " + n.toLocaleString("en-US");
+  const price = id => ITEMS.find(i => i.id === id).price;
+  const pkg = id => PACKAGES.find(p => p.id === id);
+  const adult = PACKAGES.filter(p => !p.children);
+  const kids = PACKAGES.filter(p => p.children);
+  return [
+    {
+      q: "How much does it cost to rent a flower wall in Dubai?",
+      a: `Our flower walls are ${aed(price("wall-blush"))} each for the event, with setup included. We have two: Blush Pink and White Rose Garden. The Grand collection (${aed(pkg("pkg4").price)}) includes one wall plus 16 chairs, 2 tables, table décor and place settings.`,
+    },
+    {
+      q: "How much is Chiavari chair and table rental?",
+      a: `White Chiavari chairs with cushioned seats are ${aed(price("chair-adult"))} each. Adult rectangle tables with a white cover are ${aed(price("table-adult"))} each. Children's Chiavari chairs are ${aed(price("chair-kids"))} and children's tables ${aed(price("table-kids"))}.`,
+    },
+    {
+      q: "What party packages do you offer?",
+      a: adult.map(p => `${p.name} (${aed(p.price)}): ${p.summary}.`).join(" ") + " " +
+         kids.map(p => `${p.name} (${aed(p.price)}): ${p.summary}.`).join(" "),
+    },
+    {
+      q: "Do you deliver across Dubai?",
+      a: BUSINESS.deliveryRule,
+    },
+    {
+      q: "Is setup included, and how long can I keep the rentals?",
+      a: "Yes. We deliver, set up and install everything, then dismantle and collect at the end. " + BUSINESS.rentalNote + " Need longer? Choose \"More than 8 hours\" in the form and we'll quote it.",
+    },
+    {
+      q: "How do I book and hold a date?",
+      a: "Send an enquiry through the availability form on this page. It opens WhatsApp with your selection. We reply with a confirmed quote, and a 50% deposit holds the date. The balance is due on or before delivery.",
+    },
+    {
+      q: "Do you rent for children's parties?",
+      a: `Yes. We have child-sized Chiavari chairs and lower tables. ${kids.map(p => `${p.name} seats ${p.seats} for ${aed(p.price)}`).join(" and ")}. Tell us the children's ages and we'll confirm the fit.`,
+    },
+    {
+      q: "Can I see how the setup will look before I book?",
+      a: "Yes. Upload a photo of your garden, majlis or venue to the event visualizer on this page and drag our flower walls, tables and chairs into it. You can save the image or send the pieces straight to the enquiry form.",
+    },
+    {
+      q: "What is your cancellation policy?",
+      a: POLICY.points.find(p => p.title === "Cancellation").body,
+    },
+    {
+      q: "Do prices include VAT?",
+      a: BUSINESS.vatNote,
+    },
+  ];
+})();
 
 /* Visualizer sticker definitions.
    width = default width as a fraction of canvas width. */

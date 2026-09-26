@@ -3,14 +3,21 @@
   "use strict";
 
   const $ = (s, el = document) => el.querySelector(s);
-  const AED = n => `AED ${n.toLocaleString("en-US")}`;
+  const R = HelloMayaRender;
+  const AED = R.AED;
   const catalog = { packages: PACKAGES, items: ITEMS, business: BUSINESS };
 
   /* ── nav burger ── */
   const burger = $("#burger");
   const navLinks = $("#navLinks");
-  burger.addEventListener("click", () => navLinks.classList.toggle("open"));
-  navLinks.addEventListener("click", e => { if (e.target.tagName === "A") navLinks.classList.remove("open"); });
+  burger.addEventListener("click", () => {
+    burger.setAttribute("aria-expanded", navLinks.classList.toggle("open"));
+  });
+  navLinks.addEventListener("click", e => {
+    if (e.target.tagName !== "A") return;
+    navLinks.classList.remove("open");
+    burger.setAttribute("aria-expanded", "false");
+  });
 
   $("#year").textContent = new Date().getFullYear();
 
@@ -34,13 +41,11 @@
   document.querySelectorAll("[data-whatsapp-display]").forEach(el => {
     el.textContent = BUSINESS.whatsappDisplay;
   });
-  const adultFrom = Math.min(...PACKAGES.filter(p => !p.children).map(p => p.price));
   const heroFrom = $("#heroFromPrice");
-  if (heroFrom) heroFrom.textContent = AED(adultFrom);
+  if (heroFrom) heroFrom.textContent = AED(R.adultFrom());
 
   /* ── instagram carousel ── */
   const igTrack = $("#igTrack");
-  const igUrl = `https://www.instagram.com/${BUSINESS.instagram}/`;
   if (INSTAGRAM_POSTS.length) {
     igTrack.classList.add("ig__track--embeds");
     igTrack.innerHTML = INSTAGRAM_POSTS.map(url => {
@@ -50,14 +55,7 @@
       </div>`;
     }).join("");
   } else {
-    igTrack.innerHTML = INSTAGRAM_PHOTOS.map(src => `
-      <a class="ig__tile" href="${igUrl}" target="_blank" rel="noopener" aria-label="View on Instagram">
-        <img src="${src}" alt="Hello Maya Events on Instagram" loading="lazy">
-        <span class="ig__overlay">
-          <svg viewBox="0 0 24 24" width="30" height="30"><rect x="2" y="2" width="20" height="20" rx="5.5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4.7" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.3" cy="6.7" r="1.35" fill="currentColor"/></svg>
-          View on Instagram
-        </span>
-      </a>`).join("");
+    igTrack.innerHTML = R.igTiles();
   }
   const igStep = () => {
     const tile = igTrack.querySelector(".ig__tile");
@@ -70,20 +68,10 @@
   const wallSpace = $("#wallSpace");
   if (wallSpace) wallSpace.textContent = SPACE.flowerWall;
 
-  /* ── rental terms (page + dialog share one source) ── */
-  function termsMarkup() {
-    return `
-      <p class="policy__edit">${POLICY.editableNote}</p>
-      <div class="policy">
-        ${POLICY.points.map(point => `
-          <article>
-            <h3>${point.title}</h3>
-            <p>${point.body}</p>
-          </article>`).join("")}
-      </div>`;
-  }
-  $("#termsBody").innerHTML = termsMarkup();
-  $("#termsDialogBody").innerHTML = termsMarkup();
+  /* ── rental terms (page + dialog share one source) and FAQ ── */
+  $("#termsBody").innerHTML = R.termsMarkup();
+  $("#termsDialogBody").innerHTML = R.termsMarkup();
+  $("#faqList").innerHTML = R.faqMarkup();
   const termsDialog = $("#termsDialog");
   function openTerms() {
     if (typeof termsDialog.showModal === "function") termsDialog.showModal();
@@ -127,25 +115,10 @@
   }
 
   /* ── package cards ── */
-  function packageCard(p) {
-    return `
-    <article class="package ${p.featured ? "package--featured" : ""} ${p.children ? "package--kids" : ""}">
-      ${p.tag ? `<span class="package__tag">${p.tag}</span>` : ""}
-      <h3>${p.name}</h3>
-      <div class="package__price">${AED(p.price)}<small> / event</small></div>
-      ${p.seats ? `<p class="package__meta">Seats ${p.seats} children</p>` : ""}
-      <ul>${p.items.map(i => `<li>${i}</li>`).join("")}</ul>
-      ${p.notes && p.notes.length ? `<div class="package__notes">${p.notes.map(n => `<p>${n}</p>`).join("")}</div>` : ""}
-      <p class="package__rule">${BUSINESS.deliveryRule}</p>
-      <p class="package__rule">${BUSINESS.rentalNote}</p>
-      <button class="btn btn--ghost" data-pick-pkg="${p.id}">Check availability</button>
-    </article>`;
-  }
-
   const grid = $("#packagesGrid");
   const kidsGrid = $("#kidsGrid");
-  grid.innerHTML = PACKAGES.filter(p => !p.children).map(packageCard).join("");
-  kidsGrid.innerHTML = PACKAGES.filter(p => p.children).map(packageCard).join("");
+  grid.innerHTML = PACKAGES.filter(p => !p.children).map(R.packageCard).join("");
+  kidsGrid.innerHTML = PACKAGES.filter(p => p.children).map(R.packageCard).join("");
 
   function onPackagePick(event) {
     const btn = event.target.closest("[data-pick-pkg]");
@@ -171,7 +144,6 @@
   const wallChoices = ITEMS.filter(i => i.unit === "wall");
 
   itemsBox.innerHTML = `
-    <p class="bk-delivery">${BUSINESS.deliveryRule}</p>
     <p class="bk-delivery">${BUSINESS.rentalNote} ${BUSINESS.vatNote}</p>
     <div class="bk-group">
       <h4>Collections (choose one, optional)</h4>
@@ -197,8 +169,8 @@
         </label>`).join("")}
     </div>
     <div class="bk-group">
-      <h4>Add-ons beyond the collection</h4>
-      <p class="bk-hint">Pieces already inside the collection are not charged again. Use these rows only for extras. A second flower wall is optional — we ask before adding it.</p>
+      <h4>Individual pieces and add-ons</h4>
+      <p class="bk-hint">Pieces already in your collection aren't charged twice, so use these rows for extras only.</p>
       ${ITEMS.map(i => `
         <div class="bk-row">
           <div class="bk-row__info">
@@ -509,7 +481,7 @@
     const guests = $("#bkGuests").value.trim();
 
     const msg = [
-      `Hi ${BUSINESS.name}! I'd like to check availability. This enquiry does not reserve the date.`,
+      `Hi ${BUSINESS.name}! I'd like to check availability for my event.`,
       ``,
       ...quote.lines.map(line => `• ${line.label} — ${line.amount ? AED(line.amount) : "Included"}`),
       `• Delivery and collection: ${quote.delivery ? AED(quote.delivery) + " (elsewhere in Dubai)" : "Free (Damac Hills 2)"}`,
