@@ -91,6 +91,47 @@ function priceRange() {
   return `AED ${min.toLocaleString("en-US")}–${max.toLocaleString("en-US")}`;
 }
 
+/* Rental pieces are hired out, not sold. Delivery is free in one community
+   and AED 150 elsewhere, so a single shipping rate would be wrong. There is
+   no purchase-return policy. Those two merchant fields are omitted on purpose. */
+const PRICE_VALID_UNTIL = "2027-12-31";
+const PRODUCT_PAGE = {
+  "wall-blush": "flower-walls/",
+  "wall-white": "flower-walls/",
+  "chair-adult": "chiavari-chairs/",
+  "table-adult": "tables/",
+  "chair-kids": "kids-party-rentals/",
+  "table-kids": "kids-party-rentals/",
+  "pkg-kids-4": "kids-party-rentals/",
+  "pkg-kids-8": "kids-party-rentals/",
+};
+const PRODUCT_IMAGE = {
+  "wall-blush": "assets/img/wall-blush.webp",
+  "wall-white": "assets/img/wall-whiterose.webp",
+  "chair-adult": "assets/img/setup-blue-runner.webp",
+  "table-adult": "assets/img/setup-blue-runner.webp",
+  "chair-kids": "assets/img/setup-kids-pink.webp",
+  "table-kids": "assets/img/setup-kids-pink.webp",
+  "pkg-kids-4": "assets/img/setup-kids-pink.webp",
+  "pkg-kids-8": "assets/img/setup-kids-safari.webp",
+};
+
+function offerFields(price, pageUrl) {
+  if (!ALLOWED_PRICES.has(price)) throw new Error("Refusing price that is not on the site: " + price);
+  return {
+    "@type": "Offer",
+    price,
+    priceCurrency: "AED",
+    availability: "https://schema.org/InStock",
+    url: pageUrl,
+    itemCondition: "https://schema.org/UsedCondition",
+    priceValidUntil: PRICE_VALID_UNTIL,
+    businessFunction: "https://schema.org/LeaseOut",
+    areaServed: { "@type": "City", name: "Dubai" },
+    seller: { "@type": "Organization", name: BUSINESS.name },
+  };
+}
+
 function businessNode() {
   return {
     "@type": "LocalBusiness",
@@ -127,6 +168,7 @@ function businessNode() {
           price: p.price,
           priceCurrency: "AED",
           availability: "https://schema.org/InStock",
+          url: p.children ? abs("kids-party-rentals/") : `${SITE}#packages`,
           itemOffered: {
             "@type": "Service",
             name: `${p.name} collection`,
@@ -135,11 +177,8 @@ function businessNode() {
           },
         })),
         ...ITEMS.map(i => ({
-          "@type": "Offer",
-          price: i.price,
-          priceCurrency: "AED",
-          availability: "https://schema.org/InStock",
-          itemOffered: { "@type": "Product", name: i.name, description: i.detail || i.spaceNote || i.name },
+          ...offerFields(i.price, abs(PRODUCT_PAGE[i.id])),
+          itemOffered: { "@id": `${SITE}#product-${i.id}` },
         })),
       ],
     },
@@ -159,7 +198,6 @@ function faqNode(faqs, id) {
 }
 
 function offerNode(name, description, price, pageUrl, image, id) {
-  if (!ALLOWED_PRICES.has(price)) throw new Error("Refusing price that is not on the site: " + price);
   return {
     "@type": "Product",
     "@id": id,
@@ -168,15 +206,7 @@ function offerNode(name, description, price, pageUrl, image, id) {
     image: abs(image),
     brand: { "@type": "Brand", name: BUSINESS.name },
     url: pageUrl,
-    offers: {
-      "@type": "Offer",
-      price,
-      priceCurrency: "AED",
-      availability: "https://schema.org/InStock",
-      url: pageUrl,
-      areaServed: { "@type": "City", name: "Dubai" },
-      seller: { "@id": SITE + "#business" },
-    },
+    offers: offerFields(price, pageUrl),
   };
 }
 
@@ -210,6 +240,14 @@ function jsonLd(graph) {
   return { html: `<script type="application/ld+json">\n${json}\n</script>`, data: parsed };
 }
 
+function catalogProducts() {
+  return ITEMS.map(item => itemProduct(
+    item,
+    abs(PRODUCT_PAGE[item.id]),
+    PRODUCT_IMAGE[item.id]
+  ));
+}
+
 function structuredData() {
   const website = {
     "@type": "WebSite",
@@ -221,6 +259,7 @@ function structuredData() {
   };
   return jsonLd([
     businessNode(),
+    ...catalogProducts(),
     website,
     faqNode(FAQ, SITE + "#faq"),
   ]).html;
@@ -399,7 +438,7 @@ function rentalPages() {
       image: IMG.setup,
       images: [IMG.setup, IMG.blush, IMG.white],
       faqs: flowerFaqs,
-      products: [itemProduct(blush, abs("flower-walls/"), IMG.blush.webp), itemProduct(white, abs("flower-walls/"), IMG.white.webp)],
+      products: [itemProduct(blush, abs(PRODUCT_PAGE[blush.id]), PRODUCT_IMAGE[blush.id]), itemProduct(white, abs(PRODUCT_PAGE[white.id]), PRODUCT_IMAGE[white.id])],
       main: `
         <p class="hero__sub">Freestanding artificial flower walls for birthdays, baby showers and photo corners. We bring the wall, set it up, and collect it after.</p>
         <div class="hero__actions">
@@ -437,7 +476,7 @@ function rentalPages() {
       image: IMG.blue,
       images: [IMG.blue],
       faqs: chairFaqs,
-      products: [itemProduct(adultChair, abs("chiavari-chairs/"), IMG.blue.webp)],
+      products: [itemProduct(adultChair, abs(PRODUCT_PAGE[adultChair.id]), PRODUCT_IMAGE[adultChair.id])],
       main: `
         <p class="hero__sub">White Chiavari chairs for parties at home or at your venue. Adult chairs have a cushioned seat. Children's chairs have no cushion.</p>
         <div class="hero__actions">
@@ -471,7 +510,7 @@ function rentalPages() {
       image: IMG.blue,
       images: [IMG.blue, IMG.setup],
       faqs: tableFaqs,
-      products: [itemProduct(adultTable, abs("tables/"), IMG.blue.webp)],
+      products: [itemProduct(adultTable, abs(PRODUCT_PAGE[adultTable.id]), PRODUCT_IMAGE[adultTable.id])],
       main: `
         <p class="hero__sub">Rectangle tables with white covers for adult parties, and a smaller children's table with an adjustable height.</p>
         <div class="hero__actions">
@@ -509,10 +548,10 @@ function rentalPages() {
       images: [IMG.kidsPink, IMG.kidsSafari],
       faqs: kidsFaqs,
       products: [
-        itemProduct(kidsChair, abs("kids-party-rentals/"), IMG.kidsPink.webp),
-        itemProduct(kidsTable, abs("kids-party-rentals/"), IMG.kidsPink.webp),
-        packageProduct(gathering, abs("kids-party-rentals/"), IMG.kidsPink.webp),
-        packageProduct(celebration, abs("kids-party-rentals/"), IMG.kidsSafari.webp),
+        itemProduct(kidsChair, abs(PRODUCT_PAGE[kidsChair.id]), PRODUCT_IMAGE[kidsChair.id]),
+        itemProduct(kidsTable, abs(PRODUCT_PAGE[kidsTable.id]), PRODUCT_IMAGE[kidsTable.id]),
+        packageProduct(gathering, abs(PRODUCT_PAGE[gathering.id]), PRODUCT_IMAGE[gathering.id]),
+        packageProduct(celebration, abs(PRODUCT_PAGE[celebration.id]), PRODUCT_IMAGE[celebration.id]),
       ],
       main: `
         <p class="hero__sub">Child-sized tables and Chiavari chairs for parties in Dubai. The children's chairs have no cushion. We deliver, set up and collect.</p>
@@ -762,6 +801,10 @@ function assertJson(html, label, faqs) {
       if (!String(business.priceRange).startsWith("AED ")) throw new Error("Bad priceRange");
     }
     walkOffers(graph);
+    const products = [];
+    collectProducts(graph, products);
+    if (!products.length) throw new Error(label + " missing Product");
+    products.forEach(product => assertProductSnippet(product, label));
     if (faqs) {
       const faq = graph.find(node => node["@type"] === "FAQPage");
       if (!faq) throw new Error(label + " missing FAQPage");
@@ -770,14 +813,42 @@ function assertJson(html, label, faqs) {
         if (faq.mainEntity[index].name !== item.q) throw new Error("FAQ question mismatch: " + item.q);
         if (faq.mainEntity[index].acceptedAnswer.text !== item.a) throw new Error("FAQ answer mismatch: " + item.q);
       });
-      const products = graph.filter(node => node["@type"] === "Product");
-      if (!products.length) throw new Error(label + " missing Product");
-      for (const product of products) {
-        if (!product.offers || product.offers.priceCurrency !== "AED") throw new Error("Product offer must be AED");
-        if (typeof product.offers.price !== "number") throw new Error("Product price must be a number");
-      }
     }
   }
+}
+
+function collectProducts(node, out) {
+  if (!node || typeof node !== "object") return;
+  if (node["@type"] === "Product") out.push(node);
+  for (const value of Object.values(node)) {
+    if (Array.isArray(value)) value.forEach(item => collectProducts(item, out));
+    else if (value && typeof value === "object") collectProducts(value, out);
+  }
+}
+
+function assertProductSnippet(product, where) {
+  const name = product.name || "(unnamed)";
+  if (!product.name || !product.description) throw new Error(`${where} ${name} needs name and description`);
+  const images = Array.isArray(product.image) ? product.image : [product.image];
+  if (!images.length || images.some(image => typeof image !== "string" || !image.startsWith("https://www.hellomayaevents.com/"))) {
+    throw new Error(`${where} ${name} needs an absolute image URL`);
+  }
+  images.forEach(image => {
+    const rel = image.replace("https://www.hellomayaevents.com/", "");
+    if (!fs.existsSync(rel)) throw new Error(`${where} ${name} image is not a site file: ${rel}`);
+  });
+  if (!product.brand || product.brand.name !== BUSINESS.name) throw new Error(`${where} ${name} brand must be Hello Maya Events`);
+  const offer = product.offers;
+  if (!offer || offer["@type"] !== "Offer" || Array.isArray(offer)) throw new Error(`${where} ${name} offers must be one Offer object`);
+  if (typeof offer.price !== "number" || !ALLOWED_PRICES.has(offer.price)) throw new Error(`${where} ${name} price is not a site price`);
+  if (offer.priceCurrency !== "AED") throw new Error(`${where} ${name} priceCurrency`);
+  if (offer.availability !== "https://schema.org/InStock") throw new Error(`${where} ${name} availability`);
+  if (typeof offer.url !== "string" || !offer.url.startsWith("https://www.hellomayaevents.com/")) throw new Error(`${where} ${name} offer url`);
+  if (offer.itemCondition !== "https://schema.org/UsedCondition") throw new Error(`${where} ${name} itemCondition`);
+  if (offer.priceValidUntil !== PRICE_VALID_UNTIL) throw new Error(`${where} ${name} priceValidUntil`);
+  if (!offer.seller || offer.seller.name !== BUSINESS.name) throw new Error(`${where} ${name} seller`);
+  if (offer.shippingDetails || offer.hasMerchantReturnPolicy) throw new Error(`${where} ${name} must not invent shipping or returns`);
+  if (product.review || product.aggregateRating || offer.review) throw new Error(`${where} ${name} must not invent a review`);
 }
 
 function walkOffers(node) {
