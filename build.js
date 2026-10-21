@@ -126,7 +126,6 @@ function offerFields(price, pageUrl) {
     url: pageUrl,
     itemCondition: "https://schema.org/UsedCondition",
     priceValidUntil: PRICE_VALID_UNTIL,
-    businessFunction: "https://schema.org/LeaseOut",
     areaServed: { "@type": "City", name: "Dubai" },
     seller: { "@type": "Organization", name: BUSINESS.name },
   };
