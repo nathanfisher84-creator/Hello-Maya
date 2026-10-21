@@ -31,7 +31,7 @@ Everything editable lives in **`js/data.js`**:
   unit prices are the rates the packages build on.
 - `BUSINESS.deliveryRule` — the one delivery sentence used everywhere:
   free in Damac Hills 2, AED 150 elsewhere in Dubai, collection included.
-- `SPACE` — dimension placeholders. Replace them when pieces are measured.
+- `SPACE` — measured sizes in centimetres for the flower walls and tables.
 - `POLICY` — cancellation, deposit, damage and rescheduling terms.
 - Quote math lives in `js/pricing.js` (package inclusions are not charged
   again). `npm test` covers the Grand flower-wall case.

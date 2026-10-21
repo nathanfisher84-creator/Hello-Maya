@@ -1,7 +1,7 @@
 /* ─────────────────────────────────────────────────────────────
    Hello Maya Events — catalogue, delivery rule, and site policy
-   Edit prices, wording, children's packages, dimension
-   placeholders, and rental terms here. The site reads this file.
+   Edit prices, wording, children's packages, dimensions,
+   and rental terms here. The site reads this file.
    ───────────────────────────────────────────────────────────── */
 
 const BUSINESS = {
@@ -44,13 +44,11 @@ const INSTAGRAM_PHOTOS = [
   { src: "assets/img/setup-kids-safari.jpg", alt: "Safari-themed children's party table setup" },
 ];
 
-/* Space notes shown to customers. The pieces have not been measured yet:
-   once they are, replace "confirmed on your quote" with the real
-   width × height in centimetres. */
+/* Space notes shown to customers. Sizes are measured in centimetres. */
 const SPACE = {
-  flowerWall: "Each wall is freestanding and needs clear, level floor space. We confirm the exact width and height with your quote.",
-  tableAdult: "Adult rectangle table with a white cover. The 16-chair collections use two. Exact size confirmed with your quote.",
-  tableKids: "Smaller children's rectangle table with a cover. Exact size confirmed with your quote.",
+  flowerWall: "Each wall is 240 cm wide and 240 cm high. It is freestanding and needs clear, level floor space.",
+  tableAdult: "Adult rectangle table with a white cover, 180 x 75 cm and 75 cm high. The 16-chair collections use two.",
+  tableKids: "Children's rectangle table with a cover, 122 x 60 cm, with height adjustable to 50, 60 or 70 cm.",
 };
 
 /* Individual à-la-carte items.
@@ -111,7 +109,7 @@ const ITEMS = [
     unit: "chair",
     max: 100,
     vizKey: "kidsChair",
-    detail: "Child-sized white Chiavari with a cushioned seat.",
+    detail: "Child-sized white Chiavari chair, without a seat cushion.",
   },
 ];
 
@@ -211,7 +209,7 @@ const PACKAGES = [
     summary: "1 children's table · 4 children's chairs · seats 4",
     items: [
       "1 × children's table with cover",
-      "4 × children's Chiavari chairs with cushioned seats",
+      "4 × children's Chiavari chairs (no seat cushion)",
       "Seats 4 children",
     ],
     notes: [KIDS_AGE_NOTE],
@@ -228,7 +226,7 @@ const PACKAGES = [
     summary: "2 children's tables · 8 children's chairs · seats 8",
     items: [
       "2 × children's tables with covers",
-      "8 × children's Chiavari chairs with cushioned seats",
+      "8 × children's Chiavari chairs (no seat cushion)",
       "Seats 8 children",
     ],
     notes: [KIDS_AGE_NOTE],
