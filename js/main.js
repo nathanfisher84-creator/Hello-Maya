@@ -7,19 +7,8 @@
   const AED = R.AED;
   const catalog = { packages: PACKAGES, items: ITEMS, business: BUSINESS };
 
-  /* ── nav burger ── */
-  const burger = $("#burger");
-  const navLinks = $("#navLinks");
-  burger.addEventListener("click", () => {
-    burger.setAttribute("aria-expanded", navLinks.classList.toggle("open"));
-  });
-  navLinks.addEventListener("click", e => {
-    if (e.target.tagName !== "A") return;
-    navLinks.classList.remove("open");
-    burger.setAttribute("aria-expanded", "false");
-  });
-
-  $("#year").textContent = new Date().getFullYear();
+  const yearEl = $("#year");
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
 
   /* ── shared wording, so the delivery rule cannot drift ── */
   document.querySelectorAll("[data-delivery-copy]").forEach(el => {
@@ -505,4 +494,29 @@
 
     window.open(`https://wa.me/${BUSINESS.whatsapp}?text=${encodeURIComponent(msg)}`, "_blank");
   });
+
+  /* The visualizer is below the fold and not needed for the first paint. */
+  const vizSection = $("#visualizer");
+  let vizLoaded = false;
+  function loadVisualizer() {
+    if (vizLoaded || !vizSection) return;
+    vizLoaded = true;
+    const script = document.createElement("script");
+    script.src = "js/visualizer.js";
+    script.async = true;
+    document.body.appendChild(script);
+  }
+  if (vizSection) {
+    if (location.hash === "#visualizer") loadVisualizer();
+    if ("IntersectionObserver" in window) {
+      const watcher = new IntersectionObserver(entries => {
+        if (!entries.some(entry => entry.isIntersecting)) return;
+        loadVisualizer();
+        watcher.disconnect();
+      }, { rootMargin: "700px 0px" });
+      watcher.observe(vizSection);
+    } else {
+      loadVisualizer();
+    }
+  }
 })();

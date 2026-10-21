@@ -44,7 +44,7 @@ var HelloMayaRender = (function () {
     const igUrl = `https://www.instagram.com/${BUSINESS.instagram}/`;
     return INSTAGRAM_PHOTOS.map(photo => `
       <a class="ig__tile" href="${igUrl}" target="_blank" rel="noopener">
-        <img src="${photo.src}" alt="${photo.alt}" loading="lazy" width="600" height="600">
+        <img src="${photo.src}" alt="${photo.alt}" loading="lazy" decoding="async" width="${photo.width || 600}" height="${photo.height || 600}">
         <span class="ig__overlay">
           <svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5.5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4.7" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.3" cy="6.7" r="1.35" fill="currentColor"/></svg>
           View on Instagram

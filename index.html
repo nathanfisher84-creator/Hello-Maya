@@ -6,6 +6,13 @@
 <title>Flower Wall, Table &amp; Chair Rental Dubai | Hello Maya Events</title>
 <meta name="description" content="Flower wall backdrops (AED 675), white Chiavari chairs and styled tables for parties in Dubai. Packages from AED 349, set up and collected for you. Free delivery in Damac Hills 2.">
 <link rel="canonical" href="https://www.hellomayaevents.com/">
+<!--
+  Google Search Console verification (HTML tag method).
+  The owner pastes the token from Search Console. Do not invent one.
+  Uncomment the meta tag, replace PASTE_TOKEN_HERE, then deploy.
+  Steps: docs/SEARCH-CONSOLE.md
+  <meta name="google-site-verification" content="PASTE_TOKEN_HERE">
+-->
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
 <meta name="theme-color" content="#faf8f4">
 <meta name="geo.region" content="AE-DU">
@@ -27,24 +34,27 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="preload" as="image" href="assets/img/setup-flowerwall-table.jpg" fetchpriority="high">
+<link rel="preload" as="image" href="assets/img/setup-flowerwall-table.webp" type="image/webp" fetchpriority="high">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500;600&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500;600&display=swap"></noscript>
 <link rel="stylesheet" href="css/style.css">
 <!-- structured-data -->
 </head>
 <body>
 
 
+<!-- site-header:start -->
 <!-- ══════════ NAV ══════════ -->
 <header class="nav" id="top">
   <a class="nav__logo" href="#top">Hello&nbsp;Maya<span>events</span></a>
   <nav class="nav__links" id="navLinks">
-    <a href="#services">Services</a>
-    <a href="#flowerwalls">Flower Walls</a>
+    <a href="/flower-walls/">Flower walls</a>
+    <a href="/chiavari-chairs/">Chairs</a>
+    <a href="/tables/">Tables</a>
+    <a href="/kids-party-rentals/">Kids' parties</a>
     <a href="#packages">Packages</a>
-    <a href="#children">Children</a>
     <a href="#visualizer">Visualizer</a>
     <a href="#faq">FAQ</a>
   </nav>
@@ -54,6 +64,7 @@
   <a href="#book" class="btn btn--solid nav__cta">Check availability</a>
   <button class="nav__burger" id="burger" aria-label="Menu" aria-expanded="false" aria-controls="navLinks"><span></span><span></span><span></span></button>
 </header>
+<!-- site-header:end -->
 
 <!-- ══════════ HERO ══════════ -->
 <main>
@@ -73,7 +84,10 @@
     </ul>
   </div>
   <div class="hero__img">
-    <img src="assets/img/setup-flowerwall-table.jpg" alt="Blush flower wall behind a styled party table with white Chiavari chairs in Dubai" width="372" height="505" fetchpriority="high">
+    <picture>
+      <source srcset="assets/img/setup-flowerwall-table.webp" type="image/webp">
+      <img src="assets/img/setup-flowerwall-table.jpg" alt="Blush flower wall behind a styled party table with white Chiavari chairs in Dubai" width="372" height="505" fetchpriority="high">
+    </picture>
     <div class="hero__card">
       <span>Free delivery</span>
       in Damac Hills 2. AED 150 elsewhere in Dubai.
@@ -86,11 +100,11 @@
   <p class="section__eyebrow">What we rent</p>
   <h2 class="section__title">Everything for the party table</h2>
   <div class="services">
-    <div class="service"><div class="service__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.4"/><circle cx="12" cy="6.4" r="2.6"/><circle cx="17.2" cy="9.4" r="2.6"/><circle cx="16" cy="15.6" r="2.6"/><circle cx="8" cy="15.6" r="2.6"/><circle cx="6.8" cy="9.4" r="2.6"/></svg></div><h3>Flower wall backdrops</h3><p>Freestanding artificial flower walls in Blush Pink or White Rose Garden. Put one behind the cake table or use it for photos.</p></div>
-    <div class="service"><div class="service__icon"><svg viewBox="0 0 24 24"><path d="M7 3v10m10-10v10M7 6h10M7 9h10M6 13h12M7 13l-1 8m11-8l1 8m-8.5-8l-.5 7m4.5-7l.5 7"/></svg></div><h3>Chiavari chairs</h3><p>White Chiavari chairs in adult and children's sizes. Adult chairs have cushioned seats; children's chairs have no cushion.</p></div>
-    <div class="service"><div class="service__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4.2"/><path d="M2.2 7.5v4.2M4.6 7.5v4.2M3.4 11.7V17M21.2 7.2v9.6m0-9.6c-1.6.6-2.4 2-2.4 3.6v1.4h2.4"/></svg></div><h3>Tables &amp; tableware</h3><p>Rectangle tables with white covers, plus plates, cutlery, wine cups and napkins with rings.</p></div>
+    <div class="service"><div class="service__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.4"/><circle cx="12" cy="6.4" r="2.6"/><circle cx="17.2" cy="9.4" r="2.6"/><circle cx="16" cy="15.6" r="2.6"/><circle cx="8" cy="15.6" r="2.6"/><circle cx="6.8" cy="9.4" r="2.6"/></svg></div><h3><a href="/flower-walls/">Flower wall backdrops</a></h3><p>Freestanding artificial flower walls in Blush Pink or White Rose Garden. Put one behind the cake table or use it for photos. <a href="/flower-walls/">See flower walls</a>.</p></div>
+    <div class="service"><div class="service__icon"><svg viewBox="0 0 24 24"><path d="M7 3v10m10-10v10M7 6h10M7 9h10M6 13h12M7 13l-1 8m11-8l1 8m-8.5-8l-.5 7m4.5-7l.5 7"/></svg></div><h3><a href="/chiavari-chairs/">Chiavari chairs</a></h3><p>White Chiavari chairs in adult and children's sizes. Adult chairs have cushioned seats. Children's chairs have no cushion. <a href="/chiavari-chairs/">See Chiavari chairs</a>.</p></div>
+    <div class="service"><div class="service__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4.2"/><path d="M2.2 7.5v4.2M4.6 7.5v4.2M3.4 11.7V17M21.2 7.2v9.6m0-9.6c-1.6.6-2.4 2-2.4 3.6v1.4h2.4"/></svg></div><h3><a href="/tables/">Tables &amp; tableware</a></h3><p>Rectangle tables with white covers, plus plates, cutlery, wine cups and napkins with rings. <a href="/tables/">See tables</a>.</p></div>
     <div class="service"><div class="service__icon"><svg viewBox="0 0 24 24"><path d="M12 12l-6.5-4.2a1.8 1.8 0 00-2.7 1.9l1.1 5a1.8 1.8 0 002.9 1L12 12zm0 0l6.5-4.2a1.8 1.8 0 012.7 1.9l-1.1 5a1.8 1.8 0 01-2.9 1L12 12z"/><circle cx="12" cy="12" r="1.7"/><path d="M10.7 13.6L9 19m4.3-5.4L15 19"/></svg></div><h3>Table décor</h3><p>Runners, florals and small finishing touches, matched to your colours or theme.</p></div>
-    <div class="service"><div class="service__icon"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="8.4" rx="5.4" ry="6.4"/><path d="M11 15.2l1-.8 1 .8m-1.2.4c-.6 1.4.8 1.8.4 3-.3 1-1.4 1.4-1.4 2.4"/></svg></div><h3>Kids' parties</h3><p>Lower tables and child-sized chairs, in sets for 4 or 8 children. <a href="#children">See the children's collections</a>.</p></div>
+    <div class="service"><div class="service__icon"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="8.4" rx="5.4" ry="6.4"/><path d="M11 15.2l1-.8 1 .8m-1.2.4c-.6 1.4.8 1.8.4 3-.3 1-1.4 1.4-1.4 2.4"/></svg></div><h3><a href="/kids-party-rentals/">Kids' parties</a></h3><p>Lower tables and child-sized chairs, in sets for 4 or 8 children. <a href="/kids-party-rentals/">See kids' party rentals</a>.</p></div>
     <div class="service"><div class="service__icon"><svg viewBox="0 0 24 24"><path d="M3 16V7.5A1.5 1.5 0 014.5 6H14v10M14 9h4.2L21 12.4V16h-2.6M14 16h-4"/><circle cx="7.2" cy="17.4" r="1.9"/><circle cx="16.6" cy="17.4" r="1.9"/></svg></div><h3>Delivery, setup &amp; collection</h3><p data-delivery-copy></p></div>
   </div>
 </section>
@@ -102,14 +116,20 @@
   <p class="section__sub">Premium artificial blooms on a freestanding frame. <strong>AED 675</strong> per wall, set up by us.</p>
   <div class="walls">
     <figure class="wall">
-      <img src="assets/img/wall-blush.jpg" alt="Blush Pink flower wall backdrop for rent in Dubai" width="372" height="420" loading="lazy">
+      <picture>
+        <source srcset="assets/img/wall-blush.webp" type="image/webp">
+        <img src="assets/img/wall-blush.jpg" alt="Blush Pink flower wall backdrop for rent in Dubai" width="372" height="420" loading="lazy" decoding="async">
+      </picture>
       <figcaption>
         <strong>Blush Pink</strong>
         <span>Dusty rose &amp; mauve blooms · AED 675</span>
       </figcaption>
     </figure>
     <figure class="wall">
-      <img src="assets/img/wall-whiterose.jpg" alt="White Rose Garden flower wall with ivory roses and greenery" width="384" height="420" loading="lazy">
+      <picture>
+        <source srcset="assets/img/wall-whiterose.webp" type="image/webp">
+        <img src="assets/img/wall-whiterose.jpg" alt="White Rose Garden flower wall with ivory roses and greenery" width="384" height="420" loading="lazy" decoding="async">
+      </picture>
       <figcaption>
         <strong>White Rose Garden</strong>
         <span>Ivory roses with soft pink &amp; greenery · AED 675</span>
@@ -117,7 +137,7 @@
     </figure>
   </div>
   <p class="walls__ideal" id="wallSpace"></p>
-  <p class="walls__ideal">Booked for birthdays, engagements, baby and bridal showers, christenings, cake tables, photo corners and corporate events.</p>
+  <p class="walls__ideal">Booked for birthdays, engagements, baby and bridal showers, christenings, cake tables, photo corners and corporate events. <a href="/flower-walls/">Flower wall sizes and prices</a>.</p>
 </section>
 
 <!-- ══════════ PACKAGES ══════════ -->
@@ -131,7 +151,7 @@
   <div class="children" id="children">
     <p class="section__eyebrow">Little guests</p>
     <h2 class="section__title">Children's collections</h2>
-    <p class="section__sub">Kids' chairs and tables at their standard rates, with no bundle mark-up.</p>
+    <p class="section__sub">Kids' chairs and tables at their standard rates, with no bundle mark-up. <a href="/kids-party-rentals/">See kids' party rentals</a>.</p>
     <div class="packages packages--kids" id="kidsGrid"><!-- rendered by js --></div>
   </div>
 </section>
@@ -293,6 +313,7 @@
 </section>
 </main>
 
+<!-- site-footer:start -->
 <!-- ══════════ FOOTER ══════════ -->
 <footer class="footer">
   <div class="footer__brand">Hello&nbsp;Maya<span>events</span></div>
@@ -300,6 +321,10 @@
   <div class="footer__links">
     <a href="https://wa.me/971585256044" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.297-.497.1-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> <span data-whatsapp-display>+971 58 525 6044</span></a>
     <a href="https://www.instagram.com/hellomaya_dxb/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4.7" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.3" cy="6.7" r="1.35" fill="currentColor"/></svg> @hellomaya_dxb</a>
+    <a href="/flower-walls/">Flower walls</a>
+    <a href="/chiavari-chairs/">Chiavari chairs</a>
+    <a href="/tables/">Tables</a>
+    <a href="/kids-party-rentals/">Kids' parties</a>
     <a href="#terms">Rental terms</a>
     <a href="#faq">FAQ</a>
   </div>
@@ -308,6 +333,7 @@
 </footer>
 
 <a class="wa-float" href="https://wa.me/971585256044" target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.297-.497.1-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+<!-- site-footer:end -->
 
 <dialog class="sheet" id="termsDialog">
   <div class="sheet__bar">
@@ -326,10 +352,10 @@
   </div>
 </dialog>
 
-<script src="js/data.js"></script>
-<script src="js/render.js"></script>
-<script src="js/pricing.js"></script>
-<script src="js/main.js"></script>
-<script src="js/visualizer.js"></script>
+<script src="js/data.js" defer></script>
+<script src="js/render.js" defer></script>
+<script src="js/pricing.js" defer></script>
+<script src="js/nav.js" defer></script>
+<script src="js/main.js" defer></script>
 </body>
 </html>

@@ -36,12 +36,12 @@ const INSTAGRAM_POSTS = [];
 
 /* Fallback tiles (used while INSTAGRAM_POSTS is empty) */
 const INSTAGRAM_PHOTOS = [
-  { src: "assets/img/setup-flowerwall-table.jpg", alt: "Blush flower wall behind a styled table with white Chiavari chairs" },
-  { src: "assets/img/wall-blush.jpg", alt: "Blush Pink flower wall rental in Dubai" },
-  { src: "assets/img/setup-blue-runner.jpg", alt: "Long table with a blue runner and white Chiavari chairs" },
-  { src: "assets/img/setup-kids-pink.jpg", alt: "Pink children's party table with kids' Chiavari chairs" },
-  { src: "assets/img/wall-whiterose.jpg", alt: "White Rose Garden flower wall backdrop" },
-  { src: "assets/img/setup-kids-safari.jpg", alt: "Safari-themed children's party table setup" },
+  { src: "assets/img/setup-flowerwall-table.webp", alt: "Blush flower wall behind a styled table with white Chiavari chairs", width: 372, height: 505 },
+  { src: "assets/img/wall-blush.webp", alt: "Blush Pink flower wall rental in Dubai", width: 372, height: 420 },
+  { src: "assets/img/setup-blue-runner.webp", alt: "Long table with a blue runner and white Chiavari chairs", width: 380, height: 570 },
+  { src: "assets/img/setup-kids-pink.webp", alt: "Pink children's party table with kids' Chiavari chairs", width: 372, height: 488 },
+  { src: "assets/img/wall-whiterose.webp", alt: "White Rose Garden flower wall backdrop", width: 384, height: 420 },
+  { src: "assets/img/setup-kids-safari.webp", alt: "Safari-themed children's party table setup", width: 380, height: 488 },
 ];
 
 /* Space notes shown to customers. Sizes are measured in centimetres. */
@@ -286,7 +286,7 @@ const FAQ = (() => {
     },
     {
       q: "How much is Chiavari chair and table rental?",
-      a: `White Chiavari chairs with cushioned seats are ${aed(price("chair-adult"))} each. Adult rectangle tables with a white cover are ${aed(price("table-adult"))} each. Children's Chiavari chairs are ${aed(price("chair-kids"))} and children's tables ${aed(price("table-kids"))}.`,
+      a: `Adult white Chiavari chairs with a cushioned seat are ${aed(price("chair-adult"))} each. Children's Chiavari chairs are ${aed(price("chair-kids"))} each and have no cushion. Adult rectangle tables with a white cover are ${aed(price("table-adult"))} each. Children's tables are ${aed(price("table-kids"))} each.`,
     },
     {
       q: "What party packages do you offer?",
@@ -327,10 +327,10 @@ const FAQ = (() => {
 /* Visualizer sticker definitions.
    width = default width as a fraction of canvas width. */
 const VIZ_STICKERS = [
-  { key: "wallBlush", label: "Blush Pink wall",  src: "assets/stickers/wall-blush.jpg",     width: 0.42, itemId: "wall-blush" },
-  { key: "wallWhite", label: "White Rose wall",  src: "assets/stickers/wall-whiterose.jpg", width: 0.42, itemId: "wall-white" },
-  { key: "table",     label: "Table",            src: "assets/stickers/table.svg",          width: 0.30, itemId: "table-adult" },
-  { key: "chair",     label: "Chiavari chair",   src: "assets/stickers/chair.svg",          width: 0.10, itemId: "chair-adult" },
-  { key: "kidsTable", label: "Kids' table",      src: "assets/stickers/table.svg",          width: 0.22, itemId: "table-kids" },
-  { key: "kidsChair", label: "Kids' chair",      src: "assets/stickers/chair.svg",          width: 0.075, itemId: "chair-kids" },
+  { key: "wallBlush", label: "Blush Pink wall", src: "assets/stickers/wall-blush.webp", thumb: "assets/stickers/wall-blush-thumb.webp", thumbWidth: 160, thumbHeight: 184, width: 0.42, itemId: "wall-blush" },
+  { key: "wallWhite", label: "White Rose wall", src: "assets/stickers/wall-whiterose.webp", thumb: "assets/stickers/wall-whiterose-thumb.webp", thumbWidth: 160, thumbHeight: 175, width: 0.42, itemId: "wall-white" },
+  { key: "table",     label: "Table",           src: "assets/stickers/table.svg", thumb: "assets/stickers/table.svg", thumbWidth: 340, thumbHeight: 210, width: 0.30, itemId: "table-adult" },
+  { key: "chair",     label: "Chiavari chair",  src: "assets/stickers/chair.svg", thumb: "assets/stickers/chair.svg", thumbWidth: 120, thumbHeight: 210, width: 0.10, itemId: "chair-adult" },
+  { key: "kidsTable", label: "Kids' table",     src: "assets/stickers/table.svg", thumb: "assets/stickers/table.svg", thumbWidth: 340, thumbHeight: 210, width: 0.22, itemId: "table-kids" },
+  { key: "kidsChair", label: "Kids' chair",     src: "assets/stickers/chair.svg", thumb: "assets/stickers/chair.svg", thumbWidth: 120, thumbHeight: 210, width: 0.075, itemId: "chair-kids" },
 ];

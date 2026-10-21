@@ -29,7 +29,8 @@
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "viz__item";
-    btn.innerHTML = `<img src="${def.src}" alt=""><span>${def.label}</span>`;
+    const thumb = def.thumb || def.src;
+    btn.innerHTML = `<img src="${thumb}" alt="" width="${def.thumbWidth || 80}" height="${def.thumbHeight || 80}" loading="lazy" decoding="async"><span>${def.label}</span>`;
     btn.addEventListener("click", () => addSticker(def));
     palette.appendChild(btn);
   });

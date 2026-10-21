@@ -42,13 +42,20 @@ Everything editable lives in **`js/data.js`**:
 
 - pre-renders packages, prices, FAQ and terms into `index.html`, so crawlers
   that do not run JavaScript (most AI assistants) see the full page;
-- adds JSON-LD structured data (LocalBusiness with every price, FAQPage);
-- generates `robots.txt` (search and AI crawlers allowed), `sitemap.xml`
-  (with images) and `llms.txt` (a plain summary for AI assistants).
+- writes rental pages at `/flower-walls/`, `/chiavari-chairs/`, `/tables/`
+  and `/kids-party-rentals/`;
+- adds JSON-LD structured data (LocalBusiness, Product offers in AED, and a
+  FAQPage on each page that matches the questions on that page);
+- generates `robots.txt` (all crawlers allowed), `sitemap.xml` (every page,
+  with lastmod) and `llms.txt` (a plain summary for AI assistants).
 
 Change a price or FAQ answer in `js/data.js` and all of these update on the
-next deploy. The canonical address is `https://www.hellomayaevents.com/`;
+next deploy. The canonical host is `https://www.hellomayaevents.com/`;
 `hello-maya.vercel.app` redirects there.
+
+Google Search Console steps are in `docs/SEARCH-CONSOLE.md`. The verification
+meta tag in `index.html` stays commented out until you paste the token
+Search Console gives you.
 
 ## Running locally
 

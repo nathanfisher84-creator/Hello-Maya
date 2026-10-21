@@ -8,7 +8,11 @@
       "destination": "https://www.hellomayaevents.com/:path*",
       "permanent": true
     },
-    { "source": "/index.html", "destination": "/", "permanent": true }
+    { "source": "/index.html", "destination": "/", "permanent": true },
+    { "source": "/flower-walls", "destination": "/flower-walls/", "permanent": true },
+    { "source": "/chiavari-chairs", "destination": "/chiavari-chairs/", "permanent": true },
+    { "source": "/tables", "destination": "/tables/", "permanent": true },
+    { "source": "/kids-party-rentals", "destination": "/kids-party-rentals/", "permanent": true }
   ],
   "headers": [
     {

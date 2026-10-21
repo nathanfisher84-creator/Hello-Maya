@@ -21,6 +21,7 @@
 html{scroll-behavior:smooth}
 body{font-family:var(--sans);color:var(--ink);background:var(--bg);line-height:1.7;font-weight:300;font-size:16.5px}
 img{max-width:100%;display:block}
+.hero__img picture,.wall picture{display:block;width:100%}
 h1,h2,h3{font-family:var(--serif);font-weight:500;line-height:1.12;letter-spacing:.005em}
 a{color:inherit;text-decoration:none}
 button{font-family:inherit;cursor:pointer}
@@ -45,7 +46,8 @@ button{font-family:inherit;cursor:pointer}
 .nav__links a{position:relative;padding:.2rem 0;color:var(--ink-soft);transition:.25s}
 .nav__links a:hover{color:var(--ink)}
 .nav__links a::after{content:"";position:absolute;left:0;bottom:-2px;width:0;height:1px;background:var(--gold);transition:.3s}
-.nav__links a:hover::after{width:100%}
+.nav__links a:hover::after,.nav__links a[aria-current="page"]::after{width:100%}
+.nav__links a[aria-current="page"]{color:var(--ink)}
 .nav__ig{display:flex;align-items:center;color:var(--ink-soft);transition:.2s;margin-left:.2rem}
 .nav__ig:hover{color:var(--rose-deep);transform:scale(1.08)}
 .nav__links{gap:1.35rem}
@@ -87,7 +89,9 @@ button{font-family:inherit;cursor:pointer}
 .service__icon svg{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
 .service h3{font-size:1.3rem;margin-bottom:.45rem;font-weight:600}
 .service p{font-size:.88rem;color:var(--ink-soft)}
-.service a{color:var(--rose-deep);text-decoration:underline;text-underline-offset:.15em}
+.service a,.service h3 a:hover{color:var(--rose-deep)}
+.service a{text-decoration:underline;text-underline-offset:.15em}
+.service h3 a{text-decoration:none;color:inherit}
 
 /* ── flower walls ── */
 .walls{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:1.8rem;max-width:840px;margin:0 auto}
@@ -288,7 +292,28 @@ form label.bk-accept input{width:18px;height:18px;margin-top:.2rem;flex:0 0 auto
 }
 @media(min-width:1100px){.steps{grid-template-columns:repeat(4,1fr)}}
 
+/* ── rental pages ── */
+.prose{max-width:70ch;margin:0 auto 1.5rem}
+.prose p{margin:0 0 1rem;color:var(--ink-soft)}
+.prose a,.facts a,.walls__ideal a,.section__sub a,.page-links a[aria-current="page"]{color:var(--rose-deep)}
+.prose a,.walls__ideal a,.section__sub a{text-decoration:underline;text-underline-offset:.15em}
+.facts{list-style:none;display:grid;grid-template-columns:1fr;gap:.7rem;margin:0 auto 2.2rem;max-width:860px}
+.facts li{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:1rem 1.15rem;color:var(--ink-soft);font-size:.92rem}
+.facts strong{display:block;font-family:var(--serif);font-size:1.35rem;font-weight:600;color:var(--ink);margin-bottom:.15rem}
+.page-links{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center;margin:1.6rem auto 0;max-width:860px}
+.page-links a{border:1px solid var(--line);background:var(--white);border-radius:999px;padding:.55rem 1rem;font-size:.84rem}
+.page-links a:hover{border-color:var(--ink)}
+@media(min-width:700px){.facts{grid-template-columns:1fr 1fr}}
+
 /* ── responsive ── */
+@media(max-width:1100px){
+  .nav{gap:1rem}
+  .nav__links{display:none;position:absolute;top:100%;left:0;right:0;background:var(--bg);flex-direction:column;padding:1.4rem;gap:1.1rem;border-bottom:1px solid var(--line)}
+  .nav__links.open{display:flex}
+  .nav__burger{display:flex;margin-left:auto}
+  .nav__ig{margin-left:0}
+  .nav__cta{padding:.6rem .9rem;font-size:.58rem;letter-spacing:.08em}
+}
 @media(max-width:960px){
   .hero{grid-template-columns:1fr}
   .hero{padding-top:1.6rem}
@@ -301,12 +326,6 @@ form label.bk-accept input{width:18px;height:18px;margin-top:.2rem;flex:0 0 auto
   .booking{grid-template-columns:1fr}
 }
 @media(max-width:640px){
-  .nav{gap:1rem}
-  .nav__links{display:none;position:absolute;top:100%;left:0;right:0;background:var(--bg);flex-direction:column;padding:1.4rem;gap:1.1rem;border-bottom:1px solid var(--line)}
-  .nav__links.open{display:flex}
-  .nav__burger{display:flex;margin-left:auto}
-  .nav__ig{margin-left:0}
-  .nav__cta{padding:.6rem .9rem;font-size:.58rem;letter-spacing:.08em}
   .field-row{grid-template-columns:1fr}
   .viz__items{grid-template-columns:repeat(2,1fr)}
   .hero__badges li{border-right:none;padding-right:0;margin-right:0;width:100%}
