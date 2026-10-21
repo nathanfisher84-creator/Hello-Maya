@@ -802,11 +802,9 @@ function assertHome(html) {
   if (!html.includes('<link rel="canonical" href="https://www.hellomayaevents.com/">')) {
     throw new Error("Homepage canonical is wrong");
   }
-  const visible = html.replace(/<!--[\s\S]*?-->/g, "");
-  if (/google-site-verification/i.test(visible)) {
-    throw new Error("Homepage must not publish a google-site-verification token");
+  if (!html.includes('<meta name="google-site-verification" content="c_GFryfM8bx7_b9fe0jbGrCc37t-oktB08i5UzRjyy4" />')) {
+    throw new Error("Homepage verification tag is missing");
   }
-  if (!/google-site-verification/.test(html)) throw new Error("Commented verification slot is missing");
   for (const href of ["/flower-walls/", "/chiavari-chairs/", "/tables/", "/kids-party-rentals/"]) {
     if (!html.includes(`href="${href}"`)) throw new Error("Homepage missing link " + href);
   }
