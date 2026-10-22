@@ -90,10 +90,72 @@ function priceRange() {
   return `AED ${min.toLocaleString("en-US")}–${max.toLocaleString("en-US")}`;
 }
 
-/* Rental pieces are hired out, not sold. Delivery is free in one community
-   and AED 150 elsewhere, so a single shipping rate would be wrong. There is
-   no purchase-return policy. Those two merchant fields are omitted on purpose. */
+/* Delivery cost is the sentence in BUSINESS.deliveryRule: free in Damac Hills 2,
+   AED 150 elsewhere in Dubai. That is two rates, so shippingDetails lists both.
+   No handling time or transit time is published, so deliveryTime is omitted.
+   Pieces are collected by the business at the end of the rental. schema.org has
+   no return method for collection by the business (ReturnByMail, ReturnInStore
+   and ReturnAtKiosk would be false), and the terms give no day-count return
+   window, so returnMethod, returnPolicyCategory and merchantReturnDays are
+   omitted. Collection is not charged again, so the return fee is FreeReturn. */
+const PRICE_VALID_FROM = "2026-10-21";
 const PRICE_VALID_UNTIL = "2027-12-31";
+const COLLECTION_FEE_SENTENCE = "That fee covers one delivery and one collection, so collection is not charged again.";
+const COLLECTION_SENTENCE = "We dismantle and collect at the end of the rental.";
+const COLLECTION_TIME_SENTENCE = "We agree the collection time when the booking is confirmed.";
+
+function deliveryTerms() {
+  const free = "Free delivery in Damac Hills 2.";
+  const paid = `AED ${BUSINESS.deliveryFeeDubai} elsewhere in Dubai.`;
+  if (!BUSINESS.deliveryRule.startsWith(`${free} ${paid}`)) {
+    throw new Error("shippingDetails must quote BUSINESS.deliveryRule");
+  }
+  if (!BUSINESS.deliveryRule.includes(COLLECTION_FEE_SENTENCE) || !BUSINESS.deliveryRule.includes(COLLECTION_SENTENCE)) {
+    throw new Error("Delivery rule no longer states that collection is included");
+  }
+  const point = POLICY.points.find(p => p.title === "Delivery, rental time and collection");
+  if (!point || !point.body.includes(COLLECTION_TIME_SENTENCE) || !point.body.includes(BUSINESS.deliveryRule)) {
+    throw new Error("Rental terms no longer state collection by the business");
+  }
+  return { free, paid };
+}
+
+function shippingDestination(name) {
+  const region = {
+    "@type": "DefinedRegion",
+    addressCountry: "AE",
+    addressRegion: "Dubai",
+  };
+  if (name) region.name = name;
+  return region;
+}
+
+function merchantOfferFields() {
+  const terms = deliveryTerms();
+  return {
+    validFrom: PRICE_VALID_FROM,
+    shippingDetails: [
+      {
+        "@type": "OfferShippingDetails",
+        name: terms.free.replace(/\.$/, ""),
+        shippingDestination: shippingDestination("Damac Hills 2"),
+        shippingRate: { "@type": "MonetaryAmount", value: 0, currency: "AED" },
+      },
+      {
+        "@type": "OfferShippingDetails",
+        name: terms.paid.replace(/\.$/, ""),
+        shippingDestination: shippingDestination(),
+        shippingRate: { "@type": "MonetaryAmount", value: BUSINESS.deliveryFeeDubai, currency: "AED" },
+      },
+    ],
+    hasMerchantReturnPolicy: {
+      "@type": "MerchantReturnPolicy",
+      applicableCountry: "AE",
+      returnFees: "https://schema.org/FreeReturn",
+      description: `${COLLECTION_SENTENCE} ${COLLECTION_FEE_SENTENCE} ${COLLECTION_TIME_SENTENCE}`,
+    },
+  };
+}
 const PRODUCT_PAGE = {
   "wall-blush": "flower-walls/",
   "wall-white": "flower-walls/",
@@ -117,6 +179,7 @@ const PRODUCT_IMAGE = {
 
 function offerFields(price, pageUrl) {
   if (!ALLOWED_PRICES.has(price)) throw new Error("Refusing price that is not on the site: " + price);
+  const merchant = merchantOfferFields();
   return {
     "@type": "Offer",
     price,
@@ -124,9 +187,12 @@ function offerFields(price, pageUrl) {
     availability: "https://schema.org/InStock",
     url: pageUrl,
     itemCondition: "https://schema.org/UsedCondition",
+    validFrom: merchant.validFrom,
     priceValidUntil: PRICE_VALID_UNTIL,
     areaServed: { "@type": "City", name: "Dubai" },
     seller: { "@type": "Organization", name: BUSINESS.name },
+    shippingDetails: merchant.shippingDetails,
+    hasMerchantReturnPolicy: merchant.hasMerchantReturnPolicy,
   };
 }
 
@@ -167,6 +233,7 @@ function businessNode() {
           priceCurrency: "AED",
           availability: "https://schema.org/InStock",
           url: p.children ? abs("kids-party-rentals/") : `${SITE}#packages`,
+          ...merchantOfferFields(),
           itemOffered: {
             "@type": "Service",
             name: `${p.name} collection`,
@@ -841,10 +908,46 @@ function assertProductSnippet(product, where) {
   if (offer.availability !== "https://schema.org/InStock") throw new Error(`${where} ${name} availability`);
   if (typeof offer.url !== "string" || !offer.url.startsWith("https://www.hellomayaevents.com/")) throw new Error(`${where} ${name} offer url`);
   if (offer.itemCondition !== "https://schema.org/UsedCondition") throw new Error(`${where} ${name} itemCondition`);
+  if (offer.validFrom !== PRICE_VALID_FROM) throw new Error(`${where} ${name} validFrom`);
   if (offer.priceValidUntil !== PRICE_VALID_UNTIL) throw new Error(`${where} ${name} priceValidUntil`);
   if (!offer.seller || offer.seller.name !== BUSINESS.name) throw new Error(`${where} ${name} seller`);
-  if (offer.shippingDetails || offer.hasMerchantReturnPolicy) throw new Error(`${where} ${name} must not invent shipping or returns`);
+  assertMerchantOffer(offer, where, name);
   if (product.review || product.aggregateRating || offer.review) throw new Error(`${where} ${name} must not invent a review`);
+}
+
+function assertMerchantOffer(offer, where, name) {
+  const terms = deliveryTerms();
+  const details = offer.shippingDetails;
+  if (!Array.isArray(details) || details.length !== 2) throw new Error(`${where} ${name} shippingDetails`);
+  const [free, paid] = details;
+  for (const detail of details) {
+    if (detail["@type"] !== "OfferShippingDetails") throw new Error(`${where} ${name} shipping type`);
+    if (detail.deliveryTime) throw new Error(`${where} ${name} must not invent deliveryTime`);
+    const dest = detail.shippingDestination;
+    if (!dest || dest["@type"] !== "DefinedRegion" || dest.addressCountry !== "AE" || dest.addressRegion !== "Dubai") {
+      throw new Error(`${where} ${name} shippingDestination`);
+    }
+    if (!detail.shippingRate || detail.shippingRate["@type"] !== "MonetaryAmount" || detail.shippingRate.currency !== "AED") {
+      throw new Error(`${where} ${name} shippingRate`);
+    }
+  }
+  if (free.name !== terms.free.replace(/\.$/, "") || free.shippingDestination.name !== "Damac Hills 2" || free.shippingRate.value !== 0) {
+    throw new Error(`${where} ${name} free delivery rate`);
+  }
+  if (paid.name !== terms.paid.replace(/\.$/, "") || paid.shippingDestination.name || paid.shippingRate.value !== BUSINESS.deliveryFeeDubai) {
+    throw new Error(`${where} ${name} Dubai delivery rate`);
+  }
+  const policy = offer.hasMerchantReturnPolicy;
+  if (!policy || policy["@type"] !== "MerchantReturnPolicy" || policy.applicableCountry !== "AE") {
+    throw new Error(`${where} ${name} hasMerchantReturnPolicy`);
+  }
+  if (policy.returnFees !== "https://schema.org/FreeReturn") throw new Error(`${where} ${name} returnFees`);
+  if (policy.description !== `${COLLECTION_SENTENCE} ${COLLECTION_FEE_SENTENCE} ${COLLECTION_TIME_SENTENCE}`) {
+    throw new Error(`${where} ${name} return policy description`);
+  }
+  for (const key of ["returnPolicyCategory", "merchantReturnDays", "returnMethod", "returnShippingFeesAmount"]) {
+    if (policy[key]) throw new Error(`${where} ${name} must not invent ${key}`);
+  }
 }
 
 function walkOffers(node) {
@@ -852,6 +955,7 @@ function walkOffers(node) {
   if (node["@type"] === "Offer") {
     if (node.priceCurrency !== "AED") throw new Error("Offer is not AED");
     if (!ALLOWED_PRICES.has(node.price)) throw new Error("Offer price is not a site price: " + node.price);
+    assertMerchantOffer(node, "offer", node.itemOffered && node.itemOffered.name || node.price);
   }
   for (const value of Object.values(node)) {
     if (Array.isArray(value)) value.forEach(walkOffers);
