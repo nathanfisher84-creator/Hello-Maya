@@ -52,7 +52,6 @@ function fillAttr(html, attr, text) {
 function prerender(html) {
   html = fillAttr(html, "data-delivery-copy", BUSINESS.deliveryRule);
   html = fillAttr(html, "data-rental-copy", BUSINESS.rentalNote);
-  html = fillAttr(html, "data-vat-copy", BUSINESS.vatNote);
   html = fillAttr(html, "data-response-copy", BUSINESS.responseNote);
   html = fillId(html, "heroFromPrice", R.AED(R.adultFrom()));
   html = fillId(html, "wallSpace", SPACE.flowerWall);
@@ -455,7 +454,7 @@ function rentalPages() {
           <p>Each wall is ${R.AED(blush.price)} for the event. ${blush.detail} ${white.detail}</p>
           <p>${grand.name} is ${R.AED(grand.price)}. ${grand.summary}. ${grand.notes[0]}</p>
           <p>${BUSINESS.deliveryRule}</p>
-          <p>${BUSINESS.rentalNote} ${BUSINESS.vatNote}</p>
+          <p>${BUSINESS.rentalNote}</p>
           <p>People book a wall for birthdays, engagements, baby showers, bridal showers, christenings, cake tables, photo corners and corporate events.</p>
           <p>Pair a wall with <a href="/chiavari-chairs/">Chiavari chairs</a>, <a href="/tables/">tables</a> or <a href="/kids-party-rentals/">kids' party rentals</a>. Or go back <a href="/">home</a> and <a href="/#book">check availability</a>.</p>
         </div>
@@ -494,7 +493,6 @@ function rentalPages() {
           <p>Children's Chiavari chairs are a smaller size. They have no cushion. The price is ${R.AED(kidsChair.price)} per chair. Sets for children are on the <a href="/kids-party-rentals/">kids' party rentals</a> page.</p>
           <p>${adultPackages.map(p => `${p.name} is ${R.AED(p.price)}. ${p.summary}.`).join(" ")}</p>
           <p>${BUSINESS.deliveryRule}</p>
-          <p>${BUSINESS.vatNote}</p>
           <p>Add a <a href="/flower-walls/">flower wall</a> or <a href="/tables/">tables</a>, or <a href="/#book">check availability</a>. More packages are on the <a href="/">home page</a>.</p>
         </div>
         ${related("/chiavari-chairs/")}`,
@@ -528,7 +526,7 @@ function rentalPages() {
           <p>${SPACE.tableKids} It is ${R.AED(kidsTable.price)} per table. Children's sets are on the <a href="/kids-party-rentals/">kids' party rentals</a> page.</p>
           <p>${styled.name} is ${R.AED(styled.price)} and adds table décor: runners, florals and finishing touches. ${signature.name} is ${R.AED(signature.price)}. ${grand.name} is ${R.AED(grand.price)}. Both add place settings for 16 chairs.</p>
           <p>${BUSINESS.deliveryRule}</p>
-          <p>${BUSINESS.rentalNote} ${BUSINESS.vatNote}</p>
+          <p>${BUSINESS.rentalNote}</p>
           <p>See <a href="/chiavari-chairs/">Chiavari chairs</a> and <a href="/flower-walls/">flower walls</a>, or <a href="/#book">check availability</a>.</p>
         </div>
         <div class="walls">
@@ -570,7 +568,7 @@ function rentalPages() {
           <p>${kidsChair.detail} Adult chairs, with a cushioned seat, are on the <a href="/chiavari-chairs/">Chiavari chairs</a> page.</p>
           <p>${KIDS_AGE_NOTE}</p>
           <p>${BUSINESS.deliveryRule}</p>
-          <p>${BUSINESS.rentalNote} ${BUSINESS.vatNote}</p>
+          <p>${BUSINESS.rentalNote}</p>
           <p>Add a <a href="/flower-walls/">flower wall</a> or adult <a href="/tables/">tables</a> if the grown-ups need a seat too. Then <a href="/#book">check availability</a>, or start from <a href="/">home</a>.</p>
         </div>
         <div class="walls">
@@ -716,7 +714,6 @@ function llms(pages) {
 - Instagram: ${SAME_AS}
 - Area served: Dubai, UAE. ${BUSINESS.deliveryRule}
 - Rental time: ${BUSINESS.rentalNote}
-- ${BUSINESS.vatNote}
 
 ## Pages
 

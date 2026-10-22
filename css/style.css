@@ -102,7 +102,6 @@ button{font-family:inherit;cursor:pointer}
 .wall figcaption strong{font-family:var(--serif);font-size:1.45rem;font-weight:600;color:var(--ink)}
 .wall figcaption span{font-size:.82rem;color:var(--ink-soft);letter-spacing:.04em}
 .walls__ideal{text-align:center;margin-top:1.4rem;font-size:.84rem;letter-spacing:.02em;color:var(--ink-soft);max-width:72ch;margin-left:auto;margin-right:auto;line-height:1.55}
-.vat-line{text-align:center;color:var(--ink-soft);font-size:.82rem;margin:-1.4rem auto 2rem;max-width:62ch}
 
 /* ── packages ── */
 .packages{display:grid;grid-template-columns:1fr;gap:1.1rem;align-items:stretch}

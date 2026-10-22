@@ -17,9 +17,6 @@
   document.querySelectorAll("[data-rental-copy]").forEach(el => {
     el.textContent = BUSINESS.rentalNote;
   });
-  document.querySelectorAll("[data-vat-copy]").forEach(el => {
-    el.textContent = BUSINESS.vatNote;
-  });
   document.querySelectorAll("[data-response-copy]").forEach(el => {
     el.textContent = BUSINESS.responseNote;
   });
@@ -133,7 +130,7 @@
   const wallChoices = ITEMS.filter(i => i.unit === "wall");
 
   itemsBox.innerHTML = `
-    <p class="bk-delivery">${BUSINESS.rentalNote} ${BUSINESS.vatNote}</p>
+    <p class="bk-delivery">${BUSINESS.rentalNote}</p>
     <div class="bk-group">
       <h4>Collections (choose one, optional)</h4>
       <label class="bk-pkg" data-pkg="">
@@ -444,8 +441,7 @@
           </li>`).join("")}
         <li><span>Delivery and collection — ${deliveryWhere}</span><span>${deliveryText}</span></li>
       </ul>
-      <div class="total"><span>Estimated total</span><span>${AED(quote.total)}</span></div>
-      <p class="booking__fine">${BUSINESS.vatNote}</p>`;
+      <div class="total"><span>Estimated total</span><span>${AED(quote.total)}</span></div>`;
   }
   renderSummary();
 
@@ -475,7 +471,6 @@
       ...quote.lines.map(line => `• ${line.label} — ${line.amount ? AED(line.amount) : "Included"}`),
       `• Delivery and collection: ${quote.delivery ? AED(quote.delivery) + " (elsewhere in Dubai)" : "Free (Damac Hills 2)"}`,
       `Estimated total: ${AED(quote.total)}`,
-      BUSINESS.vatNote,
       ``,
       `Date: ${dateStr}`,
       `Start time: ${$("#bkTime").value}`,

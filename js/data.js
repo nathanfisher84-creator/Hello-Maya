@@ -18,7 +18,6 @@ const BUSINESS = {
   site: "https://www.hellomayaevents.com/",
   area: ["Dubai", "Damac Hills 2"],
   rentalNote: "Up to 8 hours of rental, starting once setup is complete.",
-  vatNote: "Prices may exclude VAT — confirmed on your quote.",
   responseNote: "We usually reply within one business day, between 10:00 and 18:00 Gulf Standard Time. A message outside those hours is answered the next working day.",
 };
 
@@ -264,8 +263,8 @@ const POLICY = {
       body: BUSINESS.deliveryRule + " " + BUSINESS.rentalNote + " We agree the collection time when the booking is confirmed.",
     },
     {
-      title: "Prices and VAT",
-      body: BUSINESS.vatNote + " The estimate in the enquiry form is not the final invoice.",
+      title: "Prices",
+      body: "The estimate in the enquiry form is not the final invoice.",
     },
   ],
 };
@@ -316,10 +315,6 @@ const FAQ = (() => {
     {
       q: "What is your cancellation policy?",
       a: POLICY.points.find(p => p.title === "Cancellation").body,
-    },
-    {
-      q: "Do prices include VAT?",
-      a: BUSINESS.vatNote,
     },
   ];
 })();
