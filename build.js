@@ -17,6 +17,7 @@ const COPY = [
   "index.html",
   "css",
   "js",
+  "admin",
   "assets",
   "favicon.svg",
   "favicon-32.png",
@@ -739,12 +740,13 @@ const AI_BOTS = [
   "Bingbot", "DuckAssistBot", "meta-externalagent", "CCBot",
 ];
 function robots() {
+  const rules = ["Allow: /", "Disallow: /admin/", "Disallow: /api/"];
   return [
     "# Search engines and AI assistants are welcome to read and cite this site.",
     "User-agent: *",
-    "Allow: /",
+    ...rules,
     "",
-    ...AI_BOTS.flatMap(bot => [`User-agent: ${bot}`, "Allow: /", ""]),
+    ...AI_BOTS.flatMap(bot => [`User-agent: ${bot}`, ...rules, ""]),
     `Sitemap: ${abs("sitemap.xml")}`,
     "",
   ].join("\n");
@@ -851,6 +853,9 @@ function assertJson(html, label, faqs) {
   const blocks = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)];
   if (!blocks.length) throw new Error(label + " missing JSON-LD");
   for (const block of blocks) {
+    if (/aggregateRating|"@type"\s*:\s*"Review"/.test(block[1])) {
+      throw new Error(label + " must not include Review structured data");
+    }
     const data = JSON.parse(block[1]);
     const graph = data["@graph"] || [data];
     const business = graph.find(node => node["@type"] === "LocalBusiness");
@@ -975,6 +980,12 @@ function assertHome(html) {
   }
   if (!html.includes('<meta name="google-site-verification" content="c_GFryfM8bx7_b9fe0jbGrCc37t-oktB08i5UzRjyy4" />')) {
     throw new Error("Homepage verification tag is missing");
+  }
+  if (!html.includes('id="reviews"') || !html.includes('src="js/reviews.js"')) {
+    throw new Error("Homepage reviews section is missing");
+  }
+  if (/aggregateRating|"@type"\s*:\s*"Review"|Licensed/i.test(html)) {
+    throw new Error("Homepage must not add review schema or say Licensed");
   }
   for (const href of ["/flower-walls/", "/chiavari-chairs/", "/tables/", "/kids-party-rentals/"]) {
     if (!html.includes(`href="${href}"`)) throw new Error("Homepage missing link " + href);

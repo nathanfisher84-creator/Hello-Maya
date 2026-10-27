@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Review moderation | Hello Maya Events</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#faf8f4">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<header class="nav">
+  <a class="nav__logo" href="/">Hello&nbsp;Maya<span>events</span></a>
+  <a href="/#reviews" class="btn btn--ghost nav__cta nav__end">Reviews on the site</a>
+</header>
+<main class="admin-page">
+  <p class="section__eyebrow">Moderation</p>
+  <h1>Guest reviews</h1>
+  <p class="admin-lead">Submissions stay private until you approve them. Reject deletes a review, including one that is already public.</p>
+  <p class="admin-status" id="adminStatus" role="status"></p>
+  <form class="reviews__form" id="adminLogin">
+    <label>Password<input type="password" name="password" autocomplete="current-password" required></label>
+    <button type="submit" class="btn btn--solid btn--big">Sign in</button>
+  </form>
+  <div id="adminPanel" hidden>
+    <section class="admin-card">
+      <h2>Waiting</h2>
+      <div id="adminPending"></div>
+    </section>
+    <section class="admin-card">
+      <h2>On the site</h2>
+      <div id="adminApproved"></div>
+    </section>
+    <button type="button" class="btn btn--ghost" id="adminLogout">Sign out</button>
+  </div>
+</main>
+<script src="/js/admin-reviews.js" defer></script>
+</body>
+</html>
