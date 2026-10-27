@@ -50,6 +50,7 @@
     <a href="/kids-party-rentals/">Kids' parties</a>
     <a href="#packages">Packages</a>
     <a href="#visualizer">Visualizer</a>
+    <a href="#reviews">Reviews</a>
     <a href="#faq">FAQ</a>
   </nav>
   <a class="nav__ig" href="https://instagram.com/hellomaya_dxb" target="_blank" rel="noopener" aria-label="Hello Maya Events on Instagram">
@@ -165,6 +166,38 @@
       Follow @hellomaya_dxb
     </a>
   </div>
+</section>
+
+<!-- ══════════ REVIEWS ══════════ -->
+<section class="section section--tint" id="reviews">
+  <p class="section__eyebrow">Guest notes</p>
+  <h2 class="section__title" id="reviewsHeading">Guest reviews</h2>
+  <p class="section__sub" id="reviewsLead">A note from your party helps the next host. We read each one before it is shown here.</p>
+  <div class="reviews" id="reviewsList" aria-live="polite"></div>
+  <form class="reviews__form" id="reviewForm">
+    <h3 class="reviews__formTitle" id="reviewsFormTitle" hidden>Leave a review</h3>
+    <div class="field-row">
+      <label>Your name<input type="text" name="name" id="reviewName" autocomplete="name" required minlength="2" maxlength="80" placeholder="Your name"></label>
+      <label>Event date, if you like<input type="date" name="eventDate" id="reviewDate"></label>
+    </div>
+    <fieldset class="reviews__stars">
+      <legend>Rating</legend>
+      <div class="reviews__starRow">
+        <label class="reviews__star"><input type="radio" name="rating" value="1" required><span>1</span></label>
+        <label class="reviews__star"><input type="radio" name="rating" value="2"><span>2</span></label>
+        <label class="reviews__star"><input type="radio" name="rating" value="3"><span>3</span></label>
+        <label class="reviews__star"><input type="radio" name="rating" value="4"><span>4</span></label>
+        <label class="reviews__star"><input type="radio" name="rating" value="5"><span>5</span></label>
+      </div>
+    </fieldset>
+    <label>Your review<textarea name="text" id="reviewText" rows="4" required minlength="12" maxlength="800" placeholder="How was the setup?"></textarea></label>
+    <div class="reviews__trap" aria-hidden="true">
+      <label class="reviews__trap">Leave this blank<input type="text" name="hm_leave_blank" tabindex="-1" autocomplete="off"></label>
+    </div>
+    <button type="submit" class="btn btn--solid btn--big" id="reviewSubmit">Send review</button>
+    <p class="reviews__note">Nothing is published until we approve it.</p>
+    <p class="reviews__status" id="reviewsStatus" role="status"></p>
+  </form>
 </section>
 
 <!-- ══════════ VISUALIZER ══════════ -->
@@ -319,6 +352,7 @@
     <a href="/tables/">Tables</a>
     <a href="/kids-party-rentals/">Kids' parties</a>
     <a href="#terms">Rental terms</a>
+    <a href="#reviews">Reviews</a>
     <a href="#faq">FAQ</a>
   </div>
   <p class="footer__fine" data-delivery-copy></p>
@@ -350,5 +384,6 @@
 <script src="js/pricing.js" defer></script>
 <script src="js/nav.js" defer></script>
 <script src="js/main.js" defer></script>
+<script src="js/reviews.js" defer></script>
 </body>
 </html>

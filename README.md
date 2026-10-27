@@ -76,6 +76,39 @@ The repo is Vercel-ready (`vercel.json` + `build.js` are already configured):
 Every push to the connected branch then auto-deploys. You can add a custom
 domain (e.g. `hellomayaevents.com`) under Project → Settings → Domains.
 
+## Guest reviews
+
+The home page has a review form. A submission is stored as **pending** and
+is not shown on the site until you approve it. There are no sample reviews.
+
+Storage is a **private** Vercel Blob store (one JSON file, `reviews/state.json`).
+Pending reviews are not public blob URLs. The code uses `BLOB_STORE_ID` with
+Vercel's short-lived OIDC token, or `BLOB_READ_WRITE_TOKEN` if you use a token
+instead. Do not connect a public store.
+
+On the Hobby plan, Blob is free within the included monthly allowance. On a
+paid Vercel plan it is usage-priced. This site's file stays tiny. Upstash
+Redis on the Vercel Marketplace did not offer a free plan for this team, so
+that was not turned on.
+
+### Approve or remove a review
+
+1. In the Vercel project **hello-maya**, create a **private** Blob store and
+   connect it to Production and Preview. That sets `BLOB_STORE_ID`. Redeploy.
+2. Set `REVIEWS_ADMIN_PASSWORD` (at least 8 characters) as a sensitive
+   environment variable for Production. Set it for Preview as well if you
+   want to moderate preview deployments. Redeploy after saving it.
+3. Open `/admin/reviews` on the site (for production,
+   `https://www.hellomayaevents.com/admin/reviews`).
+4. Enter the password. Waiting reviews have **Approve** and **Reject**.
+   Approve publishes the review on the home page. Reject deletes it.
+5. A review that is already public can be removed with **Remove**.
+6. Sign out when you are done. The session cookie lasts 12 hours.
+
+The form asks for a name, an optional event date, a rating from 1 to 5, and
+the review. It also uses a hidden field, a limit of 3 submissions per hour
+per IP address, and length checks. Those checks run on the server.
+
 ## Deploying on GitHub Pages (alternative)
 
 Repo Settings → Pages → deploy from branch → select the branch, root folder.
