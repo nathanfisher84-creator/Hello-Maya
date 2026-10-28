@@ -118,7 +118,7 @@
 
   login.addEventListener("submit", event => {
     event.preventDefault();
-    const password = new FormData(login).get("password");
+    const password = String(new FormData(login).get("password") || "").trim();
     const button = login.querySelector("button");
     if (button) button.disabled = true;
     setStatus("", false);

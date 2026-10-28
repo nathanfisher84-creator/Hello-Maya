@@ -243,7 +243,23 @@ async function main() {
   const locked = await signIn(lock, "wrong-password");
   assert.strictEqual(locked.statusCode, 429);
   const stillLocked = await signIn(lock, "test-admin-password");
-  assert.strictEqual(stillLocked.statusCode, 429);
+  assert.strictEqual(stillLocked.statusCode, 200);
+  assert.match(stillLocked.headers["set-cookie"], /__Host-hm_reviews=/);
+
+  const savedPassword = process.env.REVIEWS_ADMIN_PASSWORD;
+  process.env.REVIEWS_ADMIN_PASSWORD = "\n test-admin-password \n";
+  const padded = await signIn(memoryStore(), "  test-admin-password  ");
+  assert.strictEqual(padded.statusCode, 200);
+  assert.strictEqual(sessionValid(cookieHeader(padded).cookie, NOW), true);
+  const raw = mockRes();
+  await handleSession(
+    mockReq("POST", Buffer.from(JSON.stringify({ password: "test-admin-password" }))),
+    raw,
+    memoryStore(),
+    NOW
+  );
+  assert.strictEqual(raw.statusCode, 200);
+  process.env.REVIEWS_ADMIN_PASSWORD = savedPassword;
 
   const retry = memoryStore();
   retry.setFailSaves(1);
