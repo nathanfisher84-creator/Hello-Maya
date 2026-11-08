@@ -54,5 +54,22 @@ var HelloMayaRender = (function () {
 
   const adultFrom = () => Math.min(...PACKAGES.filter(p => !p.children).map(p => p.price));
 
-  return { AED, packageCard, termsMarkup, faqMarkup, igTiles, adultFrom };
+  function listJoin(items) {
+    if (items.length < 2) return items.join("");
+    if (items.length === 2) return items.join(" and ");
+    return items.slice(0, -1).join(", ") + " and " + items[items.length - 1];
+  }
+
+  function collectionIntro() {
+    const seating = PACKAGES.filter(p => !p.children && (p.includes["chair-adult"] || 0) > 0);
+    const corner = PACKAGES.find(p => p.id === "pkg-photo");
+    return `${listJoin(seating.map(p => p.name))} each seat 16 adults. ${corner.name} does not: it is one flower wall and one covered cake or photo table, with no chairs, décor or place settings. Prices are per event, for up to 8 hours from when setup is finished. ${wallAddonCopy()}`;
+  }
+
+  function kidsIntro() {
+    const backdrop = PACKAGES.find(p => p.id === "pkg-kids-backdrop");
+    return `Little Gathering and Little Celebration are the children's chair and table rates added together. ${backdrop.name} is Little Celebration plus one flower wall, and seats ${backdrop.seats} children. <a href="/kids-party-rentals/">See kids' party rentals</a>.`;
+  }
+
+  return { AED, packageCard, termsMarkup, faqMarkup, igTiles, adultFrom, collectionIntro, kidsIntro, wallAddonCopy };
 })();

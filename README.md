@@ -24,17 +24,19 @@ table & chair rentals for birthdays, baby showers, brunches and kids' parties.
 
 Everything editable lives in **`js/data.js`**:
 
-- `PACKAGES` — adult collections and the children's collections. Adult test
-  prices: Essentials 349, Styled 449, Signature 649, Grand 1,199. Children's
-  prices are the kids' chair and table rates added together.
-- `ITEMS` — à-la-carte items. Flower walls stay at AED 675. Chair and table
-  unit prices are the rates the packages build on.
+- `PACKAGES` — adult collections and the children's collections. Seating
+  collections: Essentials 349, Styled 449, Signature 649, Essentials with
+  Wall 899, Styled with Wall 999, Grand 1,199. The Photo Corner is 749 and
+  does not seat 16. Little Gathering and Little Celebration are the kids'
+  chair and table rates added together. Little Backdrop is 749.
+- `ITEMS` — à-la-carte items. A flower wall on its own is AED 675. Added to
+  any other booking it is AED 550. Chair and table unit prices are unchanged.
 - `BUSINESS.deliveryRule` — the one delivery sentence used everywhere:
   free in Damac Hills 2, AED 150 elsewhere in Dubai, collection included.
 - `SPACE` — measured sizes in centimetres for the flower walls and tables.
 - `POLICY` — cancellation, deposit, damage and rescheduling terms.
-- Quote math lives in `js/pricing.js` (package inclusions are not charged
-  again). `npm test` covers the Grand flower-wall case.
+- Quote math lives in `js/pricing.js` (a wall inside a package is not charged
+  again; a further wall is the AED 550 add-on). `npm test` covers that case.
 
 ## SEO and AI search
 
