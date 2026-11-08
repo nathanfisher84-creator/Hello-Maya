@@ -51,8 +51,10 @@ const SPACE = {
 };
 
 /* Individual à-la-carte items.
-   Flower wall price stays AED 675. Chair and table unit prices stay as they
-   are; children's packages below are the sum of these rates. */
+   A flower wall on its own stays AED 675. Added to any other booking it is
+   WALL_ADDON_PRICE. Chair and table unit prices stay as they are.
+   Little Gathering and Little Celebration are the sum of the kids' rates.
+   The wall packages below are set prices, not the sum of the pieces. */
 const ITEMS = [
   {
     id: "wall-blush",
@@ -123,9 +125,31 @@ function priceFromIncludes(includes) {
 const LITTLE_GATHERING_INCLUDES = { "table-kids": 1, "chair-kids": 4 };
 const LITTLE_CELEBRATION_INCLUDES = { "table-kids": 2, "chair-kids": 8 };
 
-/* Shared furniture inside every adult collection. Décor and tableware are
-   described in the card copy; they are not separate catalogue items. */
+/* Shared furniture inside every 16-seat collection. The Photo Corner does
+   not use it. Décor and tableware are described in the card copy; they are
+   not separate catalogue items. */
 const ADULT_FURNITURE = { "chair-adult": 16, "table-adult": 2 };
+
+/* AED 125 off the standalone wall. Do not recompute package prices from this. */
+const WALL_ADDON_PRICE = 550;
+
+function aedLabel(n) {
+  return "AED " + n.toLocaleString("en-US");
+}
+
+function wallStandalonePrice() {
+  const wall = ITEMS.find(i => i.unit === "wall");
+  if (!wall) throw new Error("Missing flower wall");
+  return wall.price;
+}
+
+function wallAddonCopy() {
+  const standalone = wallStandalonePrice();
+  const off = standalone - WALL_ADDON_PRICE;
+  return `Adding a flower wall to any booking is ${aedLabel(WALL_ADDON_PRICE)} (${aedLabel(off)} off the standalone ${aedLabel(standalone)}). A standalone wall with no other pieces stays ${aedLabel(standalone)}. A package includes one wall, in the colour you choose. A second wall is not included; if you want both colours, we ask first and add the second at ${aedLabel(WALL_ADDON_PRICE)}.`;
+}
+
+const WALL_INCLUDED_NOTE = `The wall included here is one backdrop, in the colour you choose. A second wall is not included. If you want both colours, we ask first and add the second at ${aedLabel(WALL_ADDON_PRICE)}.`;
 
 /* Age range not yet set. Once known, state it here (e.g. "ages 2 to 8"). */
 const KIDS_AGE_NOTE = "Child-sized Chiavari chairs and a lower table. Tell us the children's ages when you enquire and we'll confirm the fit before you pay a deposit.";
@@ -177,6 +201,50 @@ const PACKAGES = [
     notes: [TABLE_DECOR_NOTE, PLACE_SETTINGS_NOTE],
   },
   {
+    id: "pkg-photo",
+    name: "The Photo Corner",
+    price: 749,
+    tag: "With flower wall",
+    includes: { "table-adult": 1, "flower-wall": 1 },
+    summary: "One flower wall and one covered cake or photo table. No chairs",
+    items: [
+      "One flower wall — Blush Pink or White Rose Garden",
+      "1 × covered cake or photo table (adult rectangle table with a white cover)",
+      "No chairs, décor or place settings",
+      "Does not seat 16 adults",
+    ],
+    notes: [WALL_INCLUDED_NOTE],
+  },
+  {
+    id: "pkg-essentials-wall",
+    name: "Essentials with Wall",
+    price: 899,
+    tag: "With flower wall",
+    includes: { ...ADULT_FURNITURE, "flower-wall": 1 },
+    summary: "Essentials, plus one flower wall (you choose the colour)",
+    items: [
+      "16 × white Chiavari chairs with cushioned seats",
+      "2 × adult rectangle tables with crisp white covers",
+      "One flower wall — Blush Pink or White Rose Garden",
+    ],
+    notes: [WALL_INCLUDED_NOTE],
+  },
+  {
+    id: "pkg-styled-wall",
+    name: "Styled with Wall",
+    price: 999,
+    tag: "With flower wall",
+    includes: { ...ADULT_FURNITURE, "flower-wall": 1 },
+    summary: "Styled, plus one flower wall (you choose the colour)",
+    items: [
+      "16 × white Chiavari chairs with cushioned seats",
+      "2 × adult rectangle tables with crisp white covers",
+      TABLE_DECOR,
+      "One flower wall — Blush Pink or White Rose Garden",
+    ],
+    notes: [WALL_INCLUDED_NOTE, TABLE_DECOR_NOTE],
+  },
+  {
     id: "pkg4",
     name: "The Grand",
     price: 1199,
@@ -191,7 +259,7 @@ const PACKAGES = [
       "One flower wall — Blush Pink or White Rose Garden",
     ],
     notes: [
-      "The wall included here is one backdrop, in the colour you choose. A second wall is not included. If you want both colours, we ask before adding the other at the standalone wall price.",
+      WALL_INCLUDED_NOTE,
       TABLE_DECOR_NOTE,
       PLACE_SETTINGS_NOTE,
     ],
@@ -229,6 +297,24 @@ const PACKAGES = [
       "Seats 8 children",
     ],
     notes: [KIDS_AGE_NOTE],
+  },
+  {
+    id: "pkg-kids-backdrop",
+    name: "Little Backdrop",
+    children: true,
+    tag: "With flower wall",
+    price: 749,
+    includes: { ...LITTLE_CELEBRATION_INCLUDES, "flower-wall": 1 },
+    seats: 8,
+    ageNote: KIDS_AGE_NOTE,
+    summary: "Little Celebration, plus one flower wall · seats 8",
+    items: [
+      "2 × children's tables with covers",
+      "8 × children's Chiavari chairs (no seat cushion)",
+      "One flower wall — Blush Pink or White Rose Garden",
+      "Seats 8 children",
+    ],
+    notes: [WALL_INCLUDED_NOTE, KIDS_AGE_NOTE],
   },
 ];
 
@@ -281,7 +367,7 @@ const FAQ = (() => {
   return [
     {
       q: "How much does it cost to rent a flower wall in Dubai?",
-      a: `Our flower walls are ${aed(price("wall-blush"))} each for the event, with setup included. We have two: Blush Pink and White Rose Garden. The Grand collection (${aed(pkg("pkg4").price)}) includes one wall plus 16 chairs, 2 tables, table décor and place settings.`,
+      a: `Our flower walls are ${aed(price("wall-blush"))} each on their own, with setup included. We have two: Blush Pink and White Rose Garden. ${wallAddonCopy()} Packages with a wall: ${PACKAGES.filter(p => p.includes["flower-wall"]).map(p => `${p.name} (${aed(p.price)})`).join(", ")}.`,
     },
     {
       q: "How much is Chiavari chair and table rental?",
@@ -289,8 +375,7 @@ const FAQ = (() => {
     },
     {
       q: "What party packages do you offer?",
-      a: adult.map(p => `${p.name} (${aed(p.price)}): ${p.summary}.`).join(" ") + " " +
-         kids.map(p => `${p.name} (${aed(p.price)}): ${p.summary}.`).join(" "),
+      a: [...adult, ...kids].map(p => `${p.name} (${aed(p.price)}): ${p.summary.replace(/\.$/, "")}.`).join(" "),
     },
     {
       q: "Do you deliver across Dubai?",
@@ -306,7 +391,7 @@ const FAQ = (() => {
     },
     {
       q: "Do you rent for children's parties?",
-      a: `Yes. We have child-sized Chiavari chairs and lower tables. ${kids.map(p => `${p.name} seats ${p.seats} for ${aed(p.price)}`).join(" and ")}. Tell us the children's ages and we'll confirm the fit.`,
+      a: `Yes. We have child-sized Chiavari chairs and lower tables. ${kids.map(p => `${p.name} is ${aed(p.price)} and seats ${p.seats}${p.includes["flower-wall"] ? ", with one flower wall" : ""}`).join(". ")}. Tell us the children's ages and we'll confirm the fit.`,
     },
     {
       q: "Can I see how the setup will look before I book?",

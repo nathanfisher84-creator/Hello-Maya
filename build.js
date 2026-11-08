@@ -28,9 +28,9 @@ const COPY = [
 /* ── load the same data the browser uses ── */
 const sandbox = {};
 vm.createContext(sandbox);
-const { BUSINESS, ITEMS, PACKAGES, POLICY, FAQ, INSTAGRAM_PHOTOS, SPACE, KIDS_AGE_NOTE, R } = vm.runInContext(
+const { BUSINESS, ITEMS, PACKAGES, POLICY, FAQ, INSTAGRAM_PHOTOS, SPACE, KIDS_AGE_NOTE, WALL_ADDON_PRICE, WALL_INCLUDED_NOTE, wallAddonCopy, R } = vm.runInContext(
   ["js/data.js", "js/render.js"].map(f => fs.readFileSync(f, "utf8")).join("\n;\n") +
-    "\n;({ BUSINESS, ITEMS, PACKAGES, POLICY, FAQ, INSTAGRAM_PHOTOS, SPACE, KIDS_AGE_NOTE, R: HelloMayaRender })",
+    "\n;({ BUSINESS, ITEMS, PACKAGES, POLICY, FAQ, INSTAGRAM_PHOTOS, SPACE, KIDS_AGE_NOTE, WALL_ADDON_PRICE, WALL_INCLUDED_NOTE, wallAddonCopy, R: HelloMayaRender })",
   sandbox
 );
 const SITE = BUSINESS.site;
@@ -55,8 +55,11 @@ function prerender(html) {
   html = fillAttr(html, "data-rental-copy", BUSINESS.rentalNote);
   html = fillAttr(html, "data-response-copy", BUSINESS.responseNote);
   html = fillId(html, "heroFromPrice", R.AED(R.adultFrom()));
+  html = fillId(html, "wallAddon", R.wallAddonCopy());
   html = fillId(html, "wallSpace", SPACE.flowerWall);
+  html = fillId(html, "packagesIntro", R.collectionIntro());
   html = fillId(html, "packagesGrid", PACKAGES.filter(p => !p.children).map(R.packageCard).join(""));
+  html = fillId(html, "kidsIntro", R.kidsIntro());
   html = fillId(html, "kidsGrid", PACKAGES.filter(p => p.children).map(R.packageCard).join(""));
   html = fillId(html, "igTrack", R.igTiles());
   html = fillId(html, "faqList", R.faqMarkup());
@@ -166,6 +169,7 @@ const PRODUCT_PAGE = {
   "table-kids": "kids-party-rentals/",
   "pkg-kids-4": "kids-party-rentals/",
   "pkg-kids-8": "kids-party-rentals/",
+  "pkg-kids-backdrop": "kids-party-rentals/",
 };
 const PRODUCT_IMAGE = {
   "wall-blush": "assets/img/wall-blush.webp",
@@ -176,6 +180,7 @@ const PRODUCT_IMAGE = {
   "table-kids": "assets/img/setup-kids-pink.webp",
   "pkg-kids-4": "assets/img/setup-kids-pink.webp",
   "pkg-kids-8": "assets/img/setup-kids-safari.webp",
+  "pkg-kids-backdrop": "assets/img/wall-blush.webp",
 };
 
 function offerFields(price, pageUrl) {
@@ -396,15 +401,20 @@ function rentalPages() {
   const essentials = pkgById("pkg1");
   const styled = pkgById("pkg2");
   const signature = pkgById("pkg3");
+  const photo = pkgById("pkg-photo");
+  const essentialsWall = pkgById("pkg-essentials-wall");
+  const styledWall = pkgById("pkg-styled-wall");
   const gathering = pkgById("pkg-kids-4");
   const celebration = pkgById("pkg-kids-8");
-  const adultPackages = [essentials, styled, signature, grand];
+  const backdrop = pkgById("pkg-kids-backdrop");
+  const seatingPackages = [essentials, styled, signature, essentialsWall, styledWall, grand];
+  const wallPackages = PACKAGES.filter(p => p.includes["flower-wall"]);
   const book = "Check availability on this site. The form opens WhatsApp with your enquiry. We reply with a confirmed quote, and a 50% deposit holds the date. The balance is due on or before delivery.";
 
   const flowerFaqs = [
     {
       q: "How much does a flower wall cost to rent in Dubai?",
-      a: `Our flower walls are ${R.AED(blush.price)} each for the event, with setup included. ${blush.name.replace("Flower Wall — ", "")} and ${white.name.replace("Flower Wall — ", "")} are the same price.`,
+      a: `A flower wall on its own is ${R.AED(blush.price)} for the event, with setup included. ${blush.name.replace("Flower Wall — ", "")} and ${white.name.replace("Flower Wall — ", "")} are the same price. ${wallAddonCopy()}`,
     },
     {
       q: "How big is the flower wall?",
@@ -412,7 +422,7 @@ function rentalPages() {
     },
     {
       q: "Does a package include a flower wall?",
-      a: `${grand.name} is ${R.AED(grand.price)}. ${grand.notes[0]} The other wall is ${R.AED(blush.price)}.`,
+      a: `${wallPackages.map(p => `${p.name} (${R.AED(p.price)}) includes one wall: ${p.summary.replace(/\.$/, "")}.`).join(" ")} ${WALL_INCLUDED_NOTE}`,
     },
     {
       q: "Do you deliver the flower wall?",
@@ -435,7 +445,7 @@ function rentalPages() {
     },
     {
       q: "How many chairs are in a package?",
-      a: `Each adult collection includes 16 white Chiavari chairs with cushioned seats. ${gathering.name} includes 4 children's chairs for ${R.AED(gathering.price)}. ${celebration.name} includes 8 children's chairs for ${R.AED(celebration.price)}.`,
+      a: `${seatingPackages.map(p => p.name).join(", ")} each includes 16 white Chiavari chairs with cushioned seats. ${photo.name} has no chairs and does not seat 16 adults. ${gathering.name} includes 4 children's chairs for ${R.AED(gathering.price)}. ${celebration.name} includes 8 children's chairs for ${R.AED(celebration.price)}. ${backdrop.name} includes 8 children's chairs and one flower wall for ${R.AED(backdrop.price)}.`,
     },
     {
       q: "Do you deliver chairs in Dubai?",
@@ -458,7 +468,7 @@ function rentalPages() {
     },
     {
       q: "Which packages include tables?",
-      a: adultPackages.map(p => `${p.name} is ${R.AED(p.price)} and includes 2 adult tables.`).join(" ") + ` ${gathering.name} includes 1 children's table. ${celebration.name} includes 2 children's tables.`,
+      a: seatingPackages.map(p => `${p.name} is ${R.AED(p.price)} and includes 2 adult tables.`).join(" ") + ` ${photo.name} is ${R.AED(photo.price)} and includes one covered cake or photo table, with no chairs. It does not seat 16 adults. ${gathering.name} includes 1 children's table. ${celebration.name} and ${backdrop.name} include 2 children's tables.`,
     },
     {
       q: "Is tableware included?",
@@ -473,7 +483,7 @@ function rentalPages() {
   const kidsFaqs = [
     {
       q: "How much is a kids' party rental?",
-      a: `${gathering.name} is ${R.AED(gathering.price)} for ${gathering.summary}. ${celebration.name} is ${R.AED(celebration.price)} for ${celebration.summary}. Kids' chairs and tables are at their standard rates, with no bundle mark-up.`,
+      a: `${gathering.name} is ${R.AED(gathering.price)} for ${gathering.summary}. ${celebration.name} is ${R.AED(celebration.price)} for ${celebration.summary}. Those two are the children's chair and table rates added together. ${backdrop.name} is ${R.AED(backdrop.price)} for ${backdrop.summary}.`,
     },
     {
       q: "Do the children's chairs have cushions?",
@@ -498,7 +508,7 @@ function rentalPages() {
       slug: "flower-walls",
       path: "/flower-walls/",
       title: "Flower Wall Rental in Dubai | Hello Maya Events",
-      description: `Freestanding flower walls for parties in Dubai. 240 cm wide and 240 cm high. Blush Pink or White Rose Garden, ${R.AED(blush.price)}, set up for you.`,
+      description: `Freestanding flower walls for parties in Dubai. 240 cm wide and 240 cm high. Blush Pink or White Rose Garden, ${R.AED(blush.price)} on its own, or ${R.AED(WALL_ADDON_PRICE)} added to a booking.`,
       h1: "Flower wall rental in Dubai",
       eyebrow: "Flower wall rental · Dubai",
       image: IMG.setup,
@@ -513,14 +523,16 @@ function rentalPages() {
         </div>`,
       body: `
         ${facts([
-          ["Price", `${R.AED(blush.price)} per wall. Setup is included.`],
+          ["On its own", `${R.AED(blush.price)} per wall. Setup is included.`],
+          ["Added to a booking", `${R.AED(WALL_ADDON_PRICE)}. ${R.AED(blush.price - WALL_ADDON_PRICE)} off the standalone price.`],
           ["Size", SPACE.flowerWall],
           ["Blush Pink", blush.detail],
           ["White Rose Garden", white.detail],
         ])}
         <div class="prose">
-          <p>Each wall is ${R.AED(blush.price)} for the event. ${blush.detail} ${white.detail}</p>
-          <p>${grand.name} is ${R.AED(grand.price)}. ${grand.summary}. ${grand.notes[0]}</p>
+          <p>A wall on its own is ${R.AED(blush.price)} for the event. ${blush.detail} ${white.detail}</p>
+          <p>${wallAddonCopy()}</p>
+          <p>${wallPackages.map(p => `${p.name} is ${R.AED(p.price)}. ${p.summary.replace(/\.$/, "")}.`).join(" ")} ${WALL_INCLUDED_NOTE}</p>
           <p>${BUSINESS.deliveryRule}</p>
           <p>${BUSINESS.rentalNote}</p>
           <p>People book a wall for birthdays, engagements, baby showers, bridal showers, christenings, cake tables, photo corners and corporate events.</p>
@@ -553,13 +565,13 @@ function rentalPages() {
         ${facts([
           ["Adult chair", `${R.AED(adultChair.price)} each. ${adultChair.detail}`],
           ["Children's chair", `${R.AED(kidsChair.price)} each. ${kidsChair.detail}`],
-          ["In a collection", "Each adult collection includes 16 chairs with cushioned seats."],
+          ["In a seating collection", `${seatingPackages.map(p => p.name).join(", ")} each includes 16 chairs with cushioned seats. ${photo.name} has no chairs.`],
           ["Rental time", BUSINESS.rentalNote],
         ])}
         <div class="prose">
           <p>${adultChair.detail} The price is ${R.AED(adultChair.price)} per chair.</p>
           <p>Children's Chiavari chairs are a smaller size. They have no cushion. The price is ${R.AED(kidsChair.price)} per chair. Sets for children are on the <a href="/kids-party-rentals/">kids' party rentals</a> page.</p>
-          <p>${adultPackages.map(p => `${p.name} is ${R.AED(p.price)}. ${p.summary}.`).join(" ")}</p>
+          <p>${seatingPackages.map(p => `${p.name} is ${R.AED(p.price)}. ${p.summary}.`).join(" ")} ${photo.name} is ${R.AED(photo.price)}. ${photo.summary} It does not seat 16 adults.</p>
           <p>${BUSINESS.deliveryRule}</p>
           <p>Add a <a href="/flower-walls/">flower wall</a> or <a href="/tables/">tables</a>, or <a href="/#book">check availability</a>. More packages are on the <a href="/">home page</a>.</p>
         </div>
@@ -586,13 +598,13 @@ function rentalPages() {
         ${facts([
           ["Adult table", `${SPACE.tableAdult} ${R.AED(adultTable.price)} each.`],
           ["Children's table", `${SPACE.tableKids} ${R.AED(kidsTable.price)} each.`],
-          ["Collections", "The 16-chair collections use two adult tables."],
+          ["Collections", "The 16-chair collections use two adult tables. The Photo Corner uses one covered table and does not seat 16 adults."],
           ["Tableware", `${signature.name} and ${grand.name} add plates, cutlery, wine cups and napkins with rings.`],
         ])}
         <div class="prose">
           <p>${SPACE.tableAdult} It is ${R.AED(adultTable.price)} per table.</p>
           <p>${SPACE.tableKids} It is ${R.AED(kidsTable.price)} per table. Children's sets are on the <a href="/kids-party-rentals/">kids' party rentals</a> page.</p>
-          <p>${styled.name} is ${R.AED(styled.price)} and adds table décor: runners, florals and finishing touches. ${signature.name} is ${R.AED(signature.price)}. ${grand.name} is ${R.AED(grand.price)}. Both add place settings for 16 chairs.</p>
+          <p>${styled.name} is ${R.AED(styled.price)} and adds table décor: runners, florals and finishing touches. ${signature.name} is ${R.AED(signature.price)}. ${grand.name} is ${R.AED(grand.price)}. Both add place settings for 16 chairs. ${photo.name} is one covered table and one flower wall, with no chairs.</p>
           <p>${BUSINESS.deliveryRule}</p>
           <p>${BUSINESS.rentalNote}</p>
           <p>See <a href="/chiavari-chairs/">Chiavari chairs</a> and <a href="/flower-walls/">flower walls</a>, or <a href="/#book">check availability</a>.</p>
@@ -606,7 +618,7 @@ function rentalPages() {
       slug: "kids-party-rentals",
       path: "/kids-party-rentals/",
       title: "Kids' Party Rentals in Dubai | Hello Maya Events",
-      description: `Kids' party rentals in Dubai. Children's Chiavari chairs have no cushion. ${gathering.name} is ${R.AED(gathering.price)} and seats 4. ${celebration.name} is ${R.AED(celebration.price)} and seats 8.`,
+      description: `Kids' party rentals in Dubai. Children's Chiavari chairs have no cushion. ${gathering.name} is ${R.AED(gathering.price)} and seats 4. ${celebration.name} is ${R.AED(celebration.price)} and seats 8. ${backdrop.name} is ${R.AED(backdrop.price)}, seats 8, and includes one flower wall.`,
       h1: "Kids' party rentals in Dubai",
       eyebrow: "Kids' parties · Dubai",
       image: IMG.kidsPink,
@@ -617,6 +629,7 @@ function rentalPages() {
         itemProduct(kidsTable, abs(PRODUCT_PAGE[kidsTable.id]), PRODUCT_IMAGE[kidsTable.id]),
         packageProduct(gathering, abs(PRODUCT_PAGE[gathering.id]), PRODUCT_IMAGE[gathering.id]),
         packageProduct(celebration, abs(PRODUCT_PAGE[celebration.id]), PRODUCT_IMAGE[celebration.id]),
+        packageProduct(backdrop, abs(PRODUCT_PAGE[backdrop.id]), PRODUCT_IMAGE[backdrop.id]),
       ],
       main: `
         <p class="hero__sub">Child-sized tables and Chiavari chairs for parties in Dubai. The children's chairs have no cushion. We deliver, set up and collect.</p>
@@ -628,11 +641,12 @@ function rentalPages() {
         ${facts([
           [gathering.name, `${R.AED(gathering.price)}. ${gathering.summary}.`],
           [celebration.name, `${R.AED(celebration.price)}. ${celebration.summary}.`],
+          [backdrop.name, `${R.AED(backdrop.price)}. ${backdrop.summary}.`],
           ["Children's chair", `${R.AED(kidsChair.price)} each. ${kidsChair.detail}`],
           ["Children's table", `${SPACE.tableKids} ${R.AED(kidsTable.price)} each.`],
         ])}
         <div class="prose">
-          <p>Kids' chairs and tables are at their standard rates, with no bundle mark-up. ${gathering.name} is ${gathering.items.map(strip).join(", ")}. ${celebration.name} is ${celebration.items.map(strip).join(", ")}.</p>
+          <p>Little Gathering and Little Celebration are the children's chair and table rates added together. ${gathering.name} is ${gathering.items.map(strip).join(", ")}. ${celebration.name} is ${celebration.items.map(strip).join(", ")}. ${backdrop.name} is ${backdrop.items.map(strip).join(", ")}.</p>
           <p>${kidsChair.detail} Adult chairs, with a cushioned seat, are on the <a href="/chiavari-chairs/">Chiavari chairs</a> page.</p>
           <p>${KIDS_AGE_NOTE}</p>
           <p>${BUSINESS.deliveryRule}</p>
@@ -798,11 +812,18 @@ ${pages.map(page => `- ${page.h1}: ${abs(page.path)}`).join("\n")}
 
 ## Flower walls
 
-${ITEMS.filter(i => i.unit === "wall").map(i => `- ${i.name.replace("Flower Wall — ", "")}: ${R.AED(i.price)}. ${i.detail} ${i.spaceNote}`).join("\n")}
+${ITEMS.filter(i => i.unit === "wall").map(i => `- ${i.name.replace("Flower Wall — ", "")}: ${R.AED(i.price)} on its own. ${i.detail} ${i.spaceNote}`).join("\n")}
 
-## Adult party collections (16 guests)
+${wallAddonCopy()}
 
-${PACKAGES.filter(p => !p.children).map(pkgLine).join("\n")}
+## Seating collections (16 adults)
+
+${PACKAGES.filter(p => !p.children && (p.includes["chair-adult"] || 0) > 0).map(pkgLine).join("\n")}
+
+## The Photo Corner
+
+${pkgLine(PACKAGES.find(p => p.id === "pkg-photo"))}
+This is not a 16-seat collection. It has no chairs, décor or place settings.
 
 ## Children's collections
 
@@ -1037,6 +1058,20 @@ for (const loc of [SITE, ...pages.map(page => abs(page.path))]) {
 }
 fs.writeFileSync(path.join(OUT, "robots.txt"), robotsTxt);
 fs.writeFileSync(path.join(OUT, "sitemap.xml"), sitemapXml);
-fs.writeFileSync(path.join(OUT, "llms.txt"), llms(pages));
+const llm = llms(pages);
+const beforeCorner = llm.slice(0, llm.indexOf("## The Photo Corner"));
+if (beforeCorner.includes("The Photo Corner")) throw new Error("llms.txt lists The Photo Corner with the 16-seat collections");
+const cornerBlock = llm.split("## The Photo Corner")[1].split("## Children's collections")[0];
+if (!cornerBlock.includes("not a 16-seat collection")) throw new Error("llms.txt does not say The Photo Corner is not a 16-seat collection");
+for (const needle of ["The Photo Corner", "Essentials with Wall", "Styled with Wall", "Little Backdrop", "AED 550", "AED 675", "AED 349", "AED 1,199"]) {
+  if (!llm.includes(needle)) throw new Error("llms.txt missing " + needle);
+}
+const flower = pages.find(page => page.slug === "flower-walls");
+const flowerAnswers = flower.faqs.map(item => item.a).join(" ");
+if (!flowerAnswers.includes("AED 550")) throw new Error("Flower wall FAQ missing the add-on price");
+for (const name of ["The Photo Corner", "Essentials with Wall", "Styled with Wall", "The Grand", "Little Backdrop"]) {
+  if (!flowerAnswers.includes(name)) throw new Error("Flower wall FAQ missing " + name);
+}
+fs.writeFileSync(path.join(OUT, "llms.txt"), llm);
 console.log("Built to", OUT);
 console.log(pages.map(page => abs(page.path)).join("\n"));
