@@ -1,7 +1,8 @@
 /* Quote math shared by the booking form, the visualizer, and node tests.
    Package inclusions are credited before anything is charged.
-   A flower wall inside a package (The Grand includes one) is not billed
-   again. A further wall is an add-on only after the customer confirms. */
+   A flower wall inside a package is not billed again. A further wall is an
+   add-on only after the customer confirms. A wall on its own uses the
+   catalogue price. A wall added to any other booking uses addonPrice. */
 (function (root) {
   "use strict";
 
@@ -16,6 +17,16 @@
 
   function wallCredit(pkg) {
     return (pkg && pkg.includes && pkg.includes["flower-wall"]) || 0;
+  }
+
+  function addedToBooking(pkg, counts, items) {
+    if (pkg) return true;
+    return items.some(item => !isWallItem(item) && (counts[item.id] || 0) > 0);
+  }
+
+  function wallUnitPrice(item, withBooking) {
+    if (isWallItem(item) && withBooking && item.addonPrice) return item.addonPrice;
+    return item.price;
   }
 
   /**
@@ -81,7 +92,7 @@
             id: item.id,
             qty: remainder,
             name: item.name,
-            amount: remainder * item.price,
+            amount: remainder * wallUnitPrice(item, true),
           });
         }
       } else {
@@ -136,20 +147,23 @@
       lines.push({
         label: colour
           ? `${colour.name} (included in ${pkg.name})`
-          : `Flower wall (included in ${pkg.name} — choose Blush Pink or White Rose Garden)`,
+          : `Flower wall (included in ${pkg.name}, choose Blush Pink or White Rose Garden)`,
         amount: 0,
         kind: "included",
       });
     }
 
+    const withBooking = addedToBooking(pkg, selection.counts, catalog.items);
     catalog.items.forEach(item => {
       const qty = selection.counts[item.id] || 0;
       if (qty <= 0) return;
       const additionalWall = isWallItem(item) && wallCredit(pkg) > 0;
+      const unit = wallUnitPrice(item, withBooking);
+      const addedWall = isWallItem(item) && unit !== item.price && !additionalWall;
       lines.push({
-        label: `${qty} × ${item.name}${additionalWall ? " (additional wall)" : ""}`,
-        amount: qty * item.price,
-        kind: additionalWall ? "addon" : "item",
+        label: `${qty} × ${item.name}${additionalWall ? " (additional wall)" : ""}${addedWall ? " (added to this booking)" : ""}`,
+        amount: qty * unit,
+        kind: additionalWall || addedWall ? "addon" : "item",
       });
     });
 
@@ -164,7 +178,7 @@
     };
   }
 
-  const api = { buildQuote, designToExtras, isWallItem, wallCredit };
+  const api = { buildQuote, designToExtras, isWallItem, wallCredit, wallUnitPrice };
   root.HelloMayaPricing = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

@@ -16,8 +16,8 @@ vm.runInContext(
   fs.readFileSync("js/data.js", "utf8") + "\n" + fs.readFileSync("js/pricing.js", "utf8"),
   sandbox
 );
-const { PACKAGES, ITEMS, BUSINESS, HelloMayaPricing } = vm.runInContext(
-  "({ PACKAGES, ITEMS, BUSINESS, HelloMayaPricing })",
+const { PACKAGES, ITEMS, BUSINESS, CONFIRMATION, HelloMayaPricing } = vm.runInContext(
+  "({ PACKAGES, ITEMS, BUSINESS, CONFIRMATION, HelloMayaPricing })",
   sandbox
 );
 const { buildQuote } = HelloMayaPricing;
@@ -44,8 +44,20 @@ assert.strictEqual(byId("pkg1").price, 349, "Essentials test price");
 assert.strictEqual(byId("pkg2").price, 449, "Styled test price");
 assert.strictEqual(byId("pkg3").price, 649, "Signature test price");
 assert.strictEqual(byId("pkg4").price, 1199, "Grand test price");
+assert.strictEqual(byId("pkg-photo").price, 749, "Photo Corner test price");
+assert.strictEqual(byId("pkg-essentials-wall").price, 899, "Essentials with Wall test price");
+assert.strictEqual(byId("pkg-styled-wall").price, 999, "Styled with Wall test price");
+assert.strictEqual(byId("pkg-kids-backdrop").price, 749, "Little Backdrop test price");
+assert.strictEqual(byId("pkg-kids-backdrop").seats, 8);
+assert.ok(byId("pkg-photo").includes["flower-wall"] === 1);
+assert.ok(byId("pkg-photo").includes["chair-adult"] == null);
+assert.strictEqual(byId("pkg-photo").includes["table-adult"], 1);
+assert.ok(!/cushioned/i.test(byId("pkg-kids-backdrop").items.join(" ")));
+assert.ok(byId("pkg-kids-backdrop").items.some(line => /no seat cushion/.test(line)));
 assert.strictEqual(item("wall-blush").price, 675);
 assert.strictEqual(item("wall-white").price, 675);
+assert.strictEqual(item("wall-blush").addonPrice, 550);
+assert.strictEqual(item("wall-white").addonPrice, 550);
 assert.strictEqual(item("chair-adult").price, 15);
 assert.strictEqual(item("chair-kids").price, 10);
 assert.strictEqual(item("table-adult").price, 75);
@@ -93,7 +105,7 @@ assert.strictEqual(extraChairs.total, 1199 + 2 * 15);
 const twoWalls = quoteDesign("pkg4", { "wall-blush": 1, "wall-white": 1 }, "dubai", false);
 assert.strictEqual(twoWalls.total, 1199 + 150);
 assert.strictEqual(twoWalls.unconfirmedWalls.length, 1);
-assert.strictEqual(twoWalls.unconfirmedWalls[0].amount, 675);
+assert.strictEqual(twoWalls.unconfirmedWalls[0].amount, 550);
 
 /* If White Rose was already the included colour, it stays included and Blush is the extra. */
 const preferred = buildQuote(catalog, {
@@ -109,7 +121,7 @@ assert.strictEqual(preferred.unconfirmedWalls[0].id, "wall-blush");
 assert.strictEqual(preferred.total, 1199 + 150);
 
 const twoWallsYes = quoteDesign("pkg4", { "wall-blush": 1, "wall-white": 1 }, "dubai", true);
-assert.strictEqual(twoWallsYes.total, 1199 + 675 + 150);
+assert.strictEqual(twoWallsYes.total, 1199 + 550 + 150);
 assert.strictEqual(twoWallsYes.unconfirmedWalls.length, 0);
 assert.strictEqual(chargedWall(twoWallsYes).length, 1);
 
@@ -119,13 +131,30 @@ assert.strictEqual(duplicate.total, 1199 + 150);
 assert.strictEqual(duplicate.capped.length, 1);
 assert.strictEqual(duplicate.capped[0].kept, 1);
 
-/* Packages without a wall still charge a standalone wall. */
+/* A wall added to a booking is AED 550, which matches the wall packages. */
 const styledPlusWall = quoteDesign("pkg2", { "wall-white": 1 }, "dubai", false);
-assert.strictEqual(styledPlusWall.total, 449 + 675 + 150);
+assert.strictEqual(styledPlusWall.total, 449 + 550 + 150);
+assert.strictEqual(quoteDesign("pkg1", { "wall-blush": 1 }, "damac", false).total, 899);
+assert.strictEqual(quoteDesign("pkg3", { "wall-white": 1 }, "damac", false).total, 1199);
 
-/* No package: the wall is the product, not an inclusion. */
+/* No package: a wall on its own stays AED 675. Two walls alone stay 675 each. */
 const wallOnly = quoteDesign(null, { "wall-white": 1 }, "dubai", false);
 assert.strictEqual(wallOnly.total, 675 + 150);
+const wallsOnly = quoteDesign(null, { "wall-white": 1, "wall-blush": 1 }, "damac", false);
+assert.strictEqual(wallsOnly.total, 675 + 675);
+
+/* A wall added to other pieces, with no package, is the AED 550 add-on. */
+const tableAndWall = quoteDesign(null, { "table-adult": 1, "wall-white": 1 }, "damac", false);
+assert.strictEqual(tableAndWall.total, 75 + 550);
+
+/* Named wall packages bill the included wall once. */
+assert.strictEqual(quoteDesign("pkg-photo", { "wall-blush": 1, "table-adult": 1 }, "damac", false).total, 749);
+assert.strictEqual(quoteDesign("pkg-kids-backdrop", {
+  "wall-white": 1, "table-kids": 2, "chair-kids": 8,
+}, "damac", false).total, 749);
+assert.strictEqual(quoteDesign("pkg-photo", {
+  "wall-blush": 1, "wall-white": 1, "table-adult": 1,
+}, "damac", true).total, 749 + 550);
 
 /* Children's package inclusions are not charged again. */
 const kidsExact = quoteDesign("pkg-kids-4", { "table-kids": 1, "chair-kids": 4 }, "damac", false);
@@ -154,5 +183,22 @@ assert.ok(page.includes('id="children"'));
 assert.ok(main.includes("BUSINESS.deliveryRule"));
 assert.ok(main.includes("designToExtras"));
 assert.ok(/Check availability/.test(page));
+assert.ok(page.includes("The Photo Corner is a wall and one covered table"));
+assert.ok(page.includes("Adding a flower wall to any booking is <strong>AED 550</strong>"));
+assert.ok(page.includes("50% deposit to confirm if the event is more than 7 days away and the total is over AED 500."));
+assert.ok(page.includes("Full payment to confirm if the event is 7 days away or less, or the total is AED 500 or under."));
+assert.ok(page.includes("Friday, Saturday and Sunday dates are not held for more than 24 hours without that confirmation payment."));
+assert.ok(!/50% deposit holds the date/i.test(page + main));
+assert.ok(!/a deposit holds the date/i.test(page + main));
+assert.ok(!/\bVAT\b/.test(page + main));
+assert.ok(!/Licensed/i.test(page + main));
+
+const data = fs.readFileSync("js/data.js", "utf8");
+assert.ok(!/50% deposit holds the date/i.test(data));
+assert.ok(!/\bVAT\b/.test(data));
+assert.ok(!/Licensed/i.test(data));
+assert.ok(data.includes("confirmation payment is refunded in full"));
+assert.ok(CONFIRMATION.half.startsWith("50% deposit to confirm"));
+assert.ok(!/—/.test(CONFIRMATION.half + CONFIRMATION.full + CONFIRMATION.weekend + CONFIRMATION.held + CONFIRMATION.cancel));
 
 console.log("pricing tests passed");

@@ -58,6 +58,7 @@ const ITEMS = [
     id: "wall-blush",
     name: "Flower Wall — Blush Pink",
     price: 675,
+    addonPrice: 550,
     unit: "wall",
     max: 1,
     vizKey: "wallBlush",
@@ -68,6 +69,7 @@ const ITEMS = [
     id: "wall-white",
     name: "Flower Wall — White Rose Garden",
     price: 675,
+    addonPrice: 550,
     unit: "wall",
     max: 1,
     vizKey: "wallWhite",
@@ -134,6 +136,18 @@ const TABLE_DECOR = "Table décor for both tables: runners, florals and finishin
 const TABLE_DECOR_NOTE = "Décor is the runners, florals and finishing touches from our styling service. It is not a separate product list. Share a palette or theme (for example blush or ivory) and we confirm what we can match on the quote.";
 const PLACE_SETTINGS = "Dinner and dessert plates, cutlery, wine cups, and napkins with rings, set for this collection's 16 chairs.";
 const PLACE_SETTINGS_NOTE = "Place settings follow the 16 chairs already in the collection. Need more covers, or a different mix? Ask in the enquiry and we will quote them. Materials are the plates, cutlery, cups and ringed napkins we already style with — exact pieces are confirmed on the quote.";
+const WALL_LINE = "One flower wall, Blush Pink or White Rose Garden";
+const WALL_PACKAGE_NOTE = "The wall included here is one backdrop, in the colour you choose. A second wall is not included. If you want both colours, we ask before adding the other for AED 550.";
+
+/* How a date is confirmed. A wall on its own stays the catalogue price.
+   Adding a wall to a booking uses each wall item's addonPrice. */
+const CONFIRMATION = {
+  half: "50% deposit to confirm if the event is more than 7 days away and the total is over AED 500. The balance is due on or before delivery.",
+  full: "Full payment to confirm if the event is 7 days away or less, or the total is AED 500 or under.",
+  weekend: "Friday, Saturday and Sunday dates are not held for more than 24 hours without that confirmation payment.",
+  held: "The date is held once we receive the amount due to confirm.",
+  cancel: "Cancel 7 or more days before the event and the confirmation payment is refunded in full. Cancel within 7 days and 50% of the confirmed quote is retained (if you paid in full, the other 50% is refunded). Cancel within 48 hours of the event, or on the day, and the full confirmed quote is payable if we cannot rebook the same pieces.",
+};
 
 const PACKAGES = [
   {
@@ -177,6 +191,46 @@ const PACKAGES = [
     notes: [TABLE_DECOR_NOTE, PLACE_SETTINGS_NOTE],
   },
   {
+    id: "pkg-photo",
+    name: "The Photo Corner",
+    price: 749,
+    includes: { "table-adult": 1, "flower-wall": 1 },
+    summary: "one flower wall and one covered cake or photo table",
+    items: [
+      WALL_LINE,
+      "One covered cake or photo table",
+      "No chairs, décor or place settings",
+    ],
+    notes: [WALL_PACKAGE_NOTE],
+  },
+  {
+    id: "pkg-essentials-wall",
+    name: "Essentials with Wall",
+    price: 899,
+    includes: { ...ADULT_FURNITURE, "flower-wall": 1 },
+    summary: "Essentials plus one flower wall",
+    items: [
+      "16 × white Chiavari chairs with cushioned seats",
+      "2 × adult rectangle tables with crisp white covers",
+      WALL_LINE,
+    ],
+    notes: [WALL_PACKAGE_NOTE],
+  },
+  {
+    id: "pkg-styled-wall",
+    name: "Styled with Wall",
+    price: 999,
+    includes: { ...ADULT_FURNITURE, "flower-wall": 1 },
+    summary: "Styled plus one flower wall",
+    items: [
+      "16 × white Chiavari chairs with cushioned seats",
+      "2 × adult rectangle tables with crisp white covers",
+      TABLE_DECOR,
+      WALL_LINE,
+    ],
+    notes: [WALL_PACKAGE_NOTE, TABLE_DECOR_NOTE],
+  },
+  {
     id: "pkg4",
     name: "The Grand",
     price: 1199,
@@ -191,7 +245,7 @@ const PACKAGES = [
       "One flower wall — Blush Pink or White Rose Garden",
     ],
     notes: [
-      "The wall included here is one backdrop, in the colour you choose. A second wall is not included. If you want both colours, we ask before adding the other at the standalone wall price.",
+      WALL_PACKAGE_NOTE,
       TABLE_DECOR_NOTE,
       PLACE_SETTINGS_NOTE,
     ],
@@ -230,6 +284,24 @@ const PACKAGES = [
     ],
     notes: [KIDS_AGE_NOTE],
   },
+  {
+    id: "pkg-kids-backdrop",
+    name: "Little Backdrop",
+    children: true,
+    tag: "Children",
+    price: 749,
+    includes: { ...LITTLE_CELEBRATION_INCLUDES, "flower-wall": 1 },
+    seats: 8,
+    ageNote: KIDS_AGE_NOTE,
+    summary: "Little Celebration plus one flower wall",
+    items: [
+      "2 × children's tables with covers",
+      "8 × children's Chiavari chairs (no seat cushion)",
+      "Seats 8 children",
+      WALL_LINE,
+    ],
+    notes: [WALL_PACKAGE_NOTE, KIDS_AGE_NOTE],
+  },
 ];
 
 /* Site policy Nathan can edit. Working defaults for a small Dubai rental,
@@ -240,15 +312,15 @@ const POLICY = {
   points: [
     {
       title: "How a date is held",
-      body: "Checking availability is an enquiry. It does not reserve the date. We hold the date only after we send a confirmed quote and we receive the deposit.",
+      body: `Checking availability is an enquiry. It does not reserve the date. ${CONFIRMATION.held} ${CONFIRMATION.weekend}`,
     },
     {
-      title: "Deposit",
-      body: "A 50% deposit of the confirmed quote holds the date and the pieces. The balance is due on or before delivery. Until the deposit arrives, the date stays open to other enquiries.",
+      title: "Confirmation payment",
+      body: `${CONFIRMATION.half} ${CONFIRMATION.full}`,
     },
     {
       title: "Cancellation",
-      body: "Cancel 7 or more days before the event and the deposit is refunded in full. Cancel within 7 days and the deposit is retained for the date we held. Cancel within 48 hours of the event, or on the day, and the confirmed quote is payable if we cannot rebook the same pieces.",
+      body: CONFIRMATION.cancel,
     },
     {
       title: "Rescheduling",
@@ -278,10 +350,16 @@ const FAQ = (() => {
   const pkg = id => PACKAGES.find(p => p.id === id);
   const adult = PACKAGES.filter(p => !p.children);
   const kids = PACKAGES.filter(p => p.children);
+  const listJoin = parts => {
+    if (parts.length < 2) return parts.join("");
+    if (parts.length === 2) return parts.join(" and ");
+    return parts.slice(0, -1).join(", ") + ", and " + parts[parts.length - 1];
+  };
+  const wallAddon = ITEMS.find(i => i.id === "wall-blush").addonPrice;
   return [
     {
       q: "How much does it cost to rent a flower wall in Dubai?",
-      a: `Our flower walls are ${aed(price("wall-blush"))} each for the event, with setup included. We have two: Blush Pink and White Rose Garden. The Grand collection (${aed(pkg("pkg4").price)}) includes one wall plus 16 chairs, 2 tables, table décor and place settings.`,
+      a: `Our flower walls are ${aed(price("wall-blush"))} each on their own, with setup included. We have two: Blush Pink and White Rose Garden. Adding a wall to any booking is ${aed(wallAddon)}. Wall packages: The Photo Corner (${aed(pkg("pkg-photo").price)}, one wall and one covered table); Essentials with Wall (${aed(pkg("pkg-essentials-wall").price)}); Styled with Wall (${aed(pkg("pkg-styled-wall").price)}); The Grand (${aed(pkg("pkg4").price)}, Signature plus one wall); Little Backdrop (${aed(pkg("pkg-kids-backdrop").price)}, Little Celebration plus one wall).`,
     },
     {
       q: "How much is Chiavari chair and table rental?",
@@ -302,11 +380,11 @@ const FAQ = (() => {
     },
     {
       q: "How do I book and hold a date?",
-      a: "Send an enquiry through the availability form on this page. It opens WhatsApp with your selection. We reply with a confirmed quote, and a 50% deposit holds the date. The balance is due on or before delivery.",
+      a: `Send an enquiry through the availability form on this page. It opens WhatsApp with your selection. We reply with a confirmed quote. ${CONFIRMATION.half} ${CONFIRMATION.full} ${CONFIRMATION.weekend} ${CONFIRMATION.held}`,
     },
     {
       q: "Do you rent for children's parties?",
-      a: `Yes. We have child-sized Chiavari chairs and lower tables. ${kids.map(p => `${p.name} seats ${p.seats} for ${aed(p.price)}`).join(" and ")}. Tell us the children's ages and we'll confirm the fit.`,
+      a: `Yes. We have child-sized Chiavari chairs and lower tables. ${listJoin(kids.map(p => p.id === "pkg-kids-backdrop" ? `${p.name} (${p.summary}) seats ${p.seats} for ${aed(p.price)}` : `${p.name} seats ${p.seats} for ${aed(p.price)}`))}. Tell us the children's ages and we'll confirm the fit.`,
     },
     {
       q: "Can I see how the setup will look before I book?",

@@ -8,8 +8,8 @@ table & chair rentals for birthdays, baby showers, brunches and kids' parties.
 - **Availability enquiry** — visitors pick a package and/or individual items,
   choose their event date, start time and rental duration, and send a
   pre-filled WhatsApp message (+971 58 525 6044) with an estimated total. The
-  message does not reserve the date: enquiry, then a confirmed quote, then a
-  deposit, then booking confirmation. No payment is taken on the site.
+  message does not reserve the date: enquiry, then a confirmed quote, then the
+  confirmation payment, then booking confirmation. No payment is taken on the site.
 - **Event visualizer** — visitors upload a photo of their own space (garden,
   majlis, venue) and drag flower walls, tables and chairs into it: move,
   resize, rotate, flip, duplicate and layer items, then download the design as
@@ -24,15 +24,18 @@ table & chair rentals for birthdays, baby showers, brunches and kids' parties.
 
 Everything editable lives in **`js/data.js`**:
 
-- `PACKAGES` — adult collections and the children's collections. Adult test
-  prices: Essentials 349, Styled 449, Signature 649, Grand 1,199. Children's
-  prices are the kids' chair and table rates added together.
-- `ITEMS` — à-la-carte items. Flower walls stay at AED 675. Chair and table
-  unit prices are the rates the packages build on.
+- `PACKAGES` — adult collections and the children's collections. Essentials 349,
+  Styled 449, Signature 649, Photo Corner 749, Essentials with Wall 899,
+  Styled with Wall 999, Grand 1,199, Little Gathering 95, Little Celebration 190,
+  Little Backdrop 749. Little Gathering and Little Celebration are the kids'
+  chair and table rates added together.
+- `ITEMS` — à-la-carte items. A flower wall on its own is AED 675. Adding a
+  flower wall to a booking is AED 550. Chair and table unit prices are the
+  rates the packages build on.
 - `BUSINESS.deliveryRule` — the one delivery sentence used everywhere:
   free in Damac Hills 2, AED 150 elsewhere in Dubai, collection included.
 - `SPACE` — measured sizes in centimetres for the flower walls and tables.
-- `POLICY` — cancellation, deposit, damage and rescheduling terms.
+- `POLICY` — confirmation payment, cancellation, damage and rescheduling terms.
 - Quote math lives in `js/pricing.js` (package inclusions are not charged
   again). `npm test` covers the Grand flower-wall case.
 

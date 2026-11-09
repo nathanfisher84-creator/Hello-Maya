@@ -147,7 +147,7 @@
     </div>
     <div class="bk-wall" id="bkWallChoice" hidden>
       <h4>Included flower wall</h4>
-      <p>This collection includes one wall. Choose the colour — it is not charged again. The other colour can be added below only as an extra.</p>
+      <p>This collection includes one wall. Choose the colour. It is not charged again. The other colour can be added below as an extra for ${AED(wallChoices[0].addonPrice)}.</p>
       ${wallChoices.map(wall => `
         <label>
           <input type="radio" name="wallColour" value="${wall.id}">
@@ -161,7 +161,7 @@
         <div class="bk-row">
           <div class="bk-row__info">
             <div class="bk-row__name">${i.name}</div>
-            <div class="bk-row__price">${AED(i.price)} / ${i.unit}</div>
+            <div class="bk-row__price">${i.unit === "wall" ? `${AED(i.addonPrice)} added to a booking · ${AED(i.price)} on its own` : `${AED(i.price)} / ${i.unit}`}</div>
             ${i.detail ? `<div class="bk-row__note">${i.detail}</div>` : ""}
             ${i.spaceNote ? `<div class="bk-row__note">${i.spaceNote}</div>` : ""}
           </div>
@@ -181,6 +181,9 @@
   }
   function itemById(id) {
     return ITEMS.find(i => i.id === id);
+  }
+  function wallExtraUnit(item) {
+    return item.addonPrice || item.price;
   }
 
   function syncQtyInputs() {
@@ -237,7 +240,7 @@
       state.extraWallConfirmed = false;
       return;
     }
-    const amount = extras.reduce((sum, i) => sum + state.qty[i.id] * i.price, 0);
+    const amount = extras.reduce((sum, i) => sum + state.qty[i.id] * wallExtraUnit(i), 0);
     const names = extras.map(i => i.name).join(" and ");
     const ok = await askYesNo(
       `${pkg.name} already includes one flower wall (${included.name}). Add ${names} as an extra for ${AED(amount)}?`
@@ -304,7 +307,7 @@
         }
         if (!state.extraWallConfirmed) {
           const ok = await askYesNo(
-            `${pkg.name} already includes one flower wall. Add the ${item.name} as an extra for ${AED(item.price)}?`
+            `${pkg.name} already includes one flower wall. Add the ${item.name} as an extra for ${AED(wallExtraUnit(item))}?`
           );
           if (!ok) {
             syncQtyInputs();
@@ -484,7 +487,7 @@
       `Phone: ${$("#bkPhone").value}`,
       $("#bkNotes").value ? `Notes: ${$("#bkNotes").value}` : null,
       ``,
-      `Next step I expect: a confirmed quote, then a deposit, then booking confirmation.`,
+      `Next step I expect: a confirmed quote, then the confirmation payment. ${CONFIRMATION.half} ${CONFIRMATION.full} ${CONFIRMATION.weekend} ${CONFIRMATION.held}`,
     ].filter(line => line !== null).join("\n");
 
     window.open(`https://wa.me/${BUSINESS.whatsapp}?text=${encodeURIComponent(msg)}`, "_blank");

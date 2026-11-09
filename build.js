@@ -28,9 +28,9 @@ const COPY = [
 /* ── load the same data the browser uses ── */
 const sandbox = {};
 vm.createContext(sandbox);
-const { BUSINESS, ITEMS, PACKAGES, POLICY, FAQ, INSTAGRAM_PHOTOS, SPACE, KIDS_AGE_NOTE, R } = vm.runInContext(
+const { BUSINESS, ITEMS, PACKAGES, POLICY, FAQ, INSTAGRAM_PHOTOS, SPACE, KIDS_AGE_NOTE, CONFIRMATION, R } = vm.runInContext(
   ["js/data.js", "js/render.js"].map(f => fs.readFileSync(f, "utf8")).join("\n;\n") +
-    "\n;({ BUSINESS, ITEMS, PACKAGES, POLICY, FAQ, INSTAGRAM_PHOTOS, SPACE, KIDS_AGE_NOTE, R: HelloMayaRender })",
+    "\n;({ BUSINESS, ITEMS, PACKAGES, POLICY, FAQ, INSTAGRAM_PHOTOS, SPACE, KIDS_AGE_NOTE, CONFIRMATION, R: HelloMayaRender })",
   sandbox
 );
 const SITE = BUSINESS.site;
@@ -396,15 +396,19 @@ function rentalPages() {
   const essentials = pkgById("pkg1");
   const styled = pkgById("pkg2");
   const signature = pkgById("pkg3");
+  const photo = pkgById("pkg-photo");
+  const essentialsWall = pkgById("pkg-essentials-wall");
+  const styledWall = pkgById("pkg-styled-wall");
   const gathering = pkgById("pkg-kids-4");
   const celebration = pkgById("pkg-kids-8");
-  const adultPackages = [essentials, styled, signature, grand];
-  const book = "Check availability on this site. The form opens WhatsApp with your enquiry. We reply with a confirmed quote, and a 50% deposit holds the date. The balance is due on or before delivery.";
+  const backdrop = pkgById("pkg-kids-backdrop");
+  const seating = [essentials, styled, signature, essentialsWall, styledWall, grand];
+  const book = `Check availability on this site. The form opens WhatsApp with your enquiry. We reply with a confirmed quote. ${CONFIRMATION.half} ${CONFIRMATION.full} ${CONFIRMATION.weekend} ${CONFIRMATION.held}`;
 
   const flowerFaqs = [
     {
       q: "How much does a flower wall cost to rent in Dubai?",
-      a: `Our flower walls are ${R.AED(blush.price)} each for the event, with setup included. ${blush.name.replace("Flower Wall — ", "")} and ${white.name.replace("Flower Wall — ", "")} are the same price.`,
+      a: `Our flower walls are ${R.AED(blush.price)} each on their own, with setup included. ${blush.name.replace("Flower Wall — ", "")} and ${white.name.replace("Flower Wall — ", "")} are the same price. Adding a wall to any booking is ${R.AED(blush.addonPrice)}.`,
     },
     {
       q: "How big is the flower wall?",
@@ -412,7 +416,7 @@ function rentalPages() {
     },
     {
       q: "Does a package include a flower wall?",
-      a: `${grand.name} is ${R.AED(grand.price)}. ${grand.notes[0]} The other wall is ${R.AED(blush.price)}.`,
+      a: `Wall packages include one backdrop, in the colour you choose. ${photo.name} is ${R.AED(photo.price)}. ${essentialsWall.name} is ${R.AED(essentialsWall.price)}. ${styledWall.name} is ${R.AED(styledWall.price)}. ${grand.name} is ${R.AED(grand.price)}. ${backdrop.name} is ${R.AED(backdrop.price)}. Adding another wall to a booking is ${R.AED(blush.addonPrice)}. A wall on its own is ${R.AED(blush.price)}.`,
     },
     {
       q: "Do you deliver the flower wall?",
@@ -435,7 +439,7 @@ function rentalPages() {
     },
     {
       q: "How many chairs are in a package?",
-      a: `Each adult collection includes 16 white Chiavari chairs with cushioned seats. ${gathering.name} includes 4 children's chairs for ${R.AED(gathering.price)}. ${celebration.name} includes 8 children's chairs for ${R.AED(celebration.price)}.`,
+      a: `${seating.map(p => p.name).join(", ").replace(/, ([^,]+)$/, " and $1")} each include 16 white Chiavari chairs with cushioned seats. ${photo.name} has no chairs. ${gathering.name} includes 4 children's chairs for ${R.AED(gathering.price)}. ${celebration.name} includes 8 children's chairs for ${R.AED(celebration.price)}. ${backdrop.name} includes 8 children's chairs and one flower wall for ${R.AED(backdrop.price)}. Children's chairs have no cushion.`,
     },
     {
       q: "Do you deliver chairs in Dubai?",
@@ -458,7 +462,7 @@ function rentalPages() {
     },
     {
       q: "Which packages include tables?",
-      a: adultPackages.map(p => `${p.name} is ${R.AED(p.price)} and includes 2 adult tables.`).join(" ") + ` ${gathering.name} includes 1 children's table. ${celebration.name} includes 2 children's tables.`,
+      a: seating.map(p => `${p.name} is ${R.AED(p.price)} and includes 2 adult tables.`).join(" ") + ` ${photo.name} is ${R.AED(photo.price)} and includes 1 covered cake or photo table. ${gathering.name} includes 1 children's table. ${celebration.name} and ${backdrop.name} include 2 children's tables.`,
     },
     {
       q: "Is tableware included?",
@@ -473,7 +477,7 @@ function rentalPages() {
   const kidsFaqs = [
     {
       q: "How much is a kids' party rental?",
-      a: `${gathering.name} is ${R.AED(gathering.price)} for ${gathering.summary}. ${celebration.name} is ${R.AED(celebration.price)} for ${celebration.summary}. Kids' chairs and tables are at their standard rates, with no bundle mark-up.`,
+      a: `${gathering.name} is ${R.AED(gathering.price)} for ${gathering.summary}. ${celebration.name} is ${R.AED(celebration.price)} for ${celebration.summary}. ${backdrop.name} is ${R.AED(backdrop.price)} for ${backdrop.summary}. Little Gathering and Little Celebration are kids' chairs and tables at their standard rates, with no bundle mark-up.`,
     },
     {
       q: "Do the children's chairs have cushions?",
@@ -504,7 +508,15 @@ function rentalPages() {
       image: IMG.setup,
       images: [IMG.setup, IMG.blush, IMG.white],
       faqs: flowerFaqs,
-      products: [itemProduct(blush, abs(PRODUCT_PAGE[blush.id]), PRODUCT_IMAGE[blush.id]), itemProduct(white, abs(PRODUCT_PAGE[white.id]), PRODUCT_IMAGE[white.id])],
+      products: [
+        itemProduct(blush, abs(PRODUCT_PAGE[blush.id]), PRODUCT_IMAGE[blush.id]),
+        itemProduct(white, abs(PRODUCT_PAGE[white.id]), PRODUCT_IMAGE[white.id]),
+        packageProduct(photo, abs("flower-walls/"), "assets/img/setup-flowerwall-table.webp"),
+        packageProduct(essentialsWall, abs("flower-walls/"), "assets/img/setup-flowerwall-table.webp"),
+        packageProduct(styledWall, abs("flower-walls/"), "assets/img/setup-flowerwall-table.webp"),
+        packageProduct(grand, abs("flower-walls/"), "assets/img/setup-flowerwall-table.webp"),
+        packageProduct(backdrop, abs("flower-walls/"), "assets/img/setup-kids-safari.webp"),
+      ],
       main: `
         <p class="hero__sub">Freestanding artificial flower walls for birthdays, baby showers and photo corners. We bring the wall, set it up, and collect it after.</p>
         <div class="hero__actions">
@@ -513,14 +525,14 @@ function rentalPages() {
         </div>`,
       body: `
         ${facts([
-          ["Price", `${R.AED(blush.price)} per wall. Setup is included.`],
+          ["Price", `${R.AED(blush.price)} per wall on its own. Adding a flower wall to any booking is ${R.AED(blush.addonPrice)}. Setup is included.`],
           ["Size", SPACE.flowerWall],
           ["Blush Pink", blush.detail],
           ["White Rose Garden", white.detail],
         ])}
         <div class="prose">
-          <p>Each wall is ${R.AED(blush.price)} for the event. ${blush.detail} ${white.detail}</p>
-          <p>${grand.name} is ${R.AED(grand.price)}. ${grand.summary}. ${grand.notes[0]}</p>
+          <p>Each wall is ${R.AED(blush.price)} on its own. Adding a flower wall to any booking is ${R.AED(blush.addonPrice)}. ${blush.detail} ${white.detail}</p>
+          <p>Wall packages include one backdrop, in the colour you choose. ${photo.name} is ${R.AED(photo.price)}. ${essentialsWall.name} is ${R.AED(essentialsWall.price)}. ${styledWall.name} is ${R.AED(styledWall.price)}. ${grand.name} is ${R.AED(grand.price)}. ${backdrop.name} is ${R.AED(backdrop.price)}.</p>
           <p>${BUSINESS.deliveryRule}</p>
           <p>${BUSINESS.rentalNote}</p>
           <p>People book a wall for birthdays, engagements, baby showers, bridal showers, christenings, cake tables, photo corners and corporate events.</p>
@@ -553,13 +565,13 @@ function rentalPages() {
         ${facts([
           ["Adult chair", `${R.AED(adultChair.price)} each. ${adultChair.detail}`],
           ["Children's chair", `${R.AED(kidsChair.price)} each. ${kidsChair.detail}`],
-          ["In a collection", "Each adult collection includes 16 chairs with cushioned seats."],
+          ["In a collection", "Seating collections include 16 chairs with cushioned seats. The Photo Corner has no chairs."],
           ["Rental time", BUSINESS.rentalNote],
         ])}
         <div class="prose">
           <p>${adultChair.detail} The price is ${R.AED(adultChair.price)} per chair.</p>
           <p>Children's Chiavari chairs are a smaller size. They have no cushion. The price is ${R.AED(kidsChair.price)} per chair. Sets for children are on the <a href="/kids-party-rentals/">kids' party rentals</a> page.</p>
-          <p>${adultPackages.map(p => `${p.name} is ${R.AED(p.price)}. ${p.summary}.`).join(" ")}</p>
+          <p>${seating.map(p => `${p.name} is ${R.AED(p.price)}. ${p.summary}.`).join(" ")} ${photo.name} is ${R.AED(photo.price)}. ${photo.summary}. It has no chairs.</p>
           <p>${BUSINESS.deliveryRule}</p>
           <p>Add a <a href="/flower-walls/">flower wall</a> or <a href="/tables/">tables</a>, or <a href="/#book">check availability</a>. More packages are on the <a href="/">home page</a>.</p>
         </div>
@@ -592,7 +604,7 @@ function rentalPages() {
         <div class="prose">
           <p>${SPACE.tableAdult} It is ${R.AED(adultTable.price)} per table.</p>
           <p>${SPACE.tableKids} It is ${R.AED(kidsTable.price)} per table. Children's sets are on the <a href="/kids-party-rentals/">kids' party rentals</a> page.</p>
-          <p>${styled.name} is ${R.AED(styled.price)} and adds table décor: runners, florals and finishing touches. ${signature.name} is ${R.AED(signature.price)}. ${grand.name} is ${R.AED(grand.price)}. Both add place settings for 16 chairs.</p>
+          <p>${styled.name} is ${R.AED(styled.price)} and adds table décor: runners, florals and finishing touches. ${signature.name} is ${R.AED(signature.price)}. ${grand.name} is ${R.AED(grand.price)}. Both add place settings for 16 chairs. ${essentialsWall.name} is ${R.AED(essentialsWall.price)}. ${styledWall.name} is ${R.AED(styledWall.price)}. ${photo.name} is ${R.AED(photo.price)}: one flower wall and one covered cake or photo table, with no chairs, décor or place settings.</p>
           <p>${BUSINESS.deliveryRule}</p>
           <p>${BUSINESS.rentalNote}</p>
           <p>See <a href="/chiavari-chairs/">Chiavari chairs</a> and <a href="/flower-walls/">flower walls</a>, or <a href="/#book">check availability</a>.</p>
@@ -606,7 +618,7 @@ function rentalPages() {
       slug: "kids-party-rentals",
       path: "/kids-party-rentals/",
       title: "Kids' Party Rentals in Dubai | Hello Maya Events",
-      description: `Kids' party rentals in Dubai. Children's Chiavari chairs have no cushion. ${gathering.name} is ${R.AED(gathering.price)} and seats 4. ${celebration.name} is ${R.AED(celebration.price)} and seats 8.`,
+      description: `Kids' party rentals in Dubai. Children's Chiavari chairs have no cushion. ${gathering.name} is ${R.AED(gathering.price)} and seats 4. ${celebration.name} is ${R.AED(celebration.price)} and seats 8. ${backdrop.name} is ${R.AED(backdrop.price)} and seats 8.`,
       h1: "Kids' party rentals in Dubai",
       eyebrow: "Kids' parties · Dubai",
       image: IMG.kidsPink,
@@ -617,6 +629,7 @@ function rentalPages() {
         itemProduct(kidsTable, abs(PRODUCT_PAGE[kidsTable.id]), PRODUCT_IMAGE[kidsTable.id]),
         packageProduct(gathering, abs(PRODUCT_PAGE[gathering.id]), PRODUCT_IMAGE[gathering.id]),
         packageProduct(celebration, abs(PRODUCT_PAGE[celebration.id]), PRODUCT_IMAGE[celebration.id]),
+        packageProduct(backdrop, abs("kids-party-rentals/"), "assets/img/setup-kids-safari.webp"),
       ],
       main: `
         <p class="hero__sub">Child-sized tables and Chiavari chairs for parties in Dubai. The children's chairs have no cushion. We deliver, set up and collect.</p>
@@ -628,11 +641,12 @@ function rentalPages() {
         ${facts([
           [gathering.name, `${R.AED(gathering.price)}. ${gathering.summary}.`],
           [celebration.name, `${R.AED(celebration.price)}. ${celebration.summary}.`],
+          [backdrop.name, `${R.AED(backdrop.price)}. ${backdrop.summary}. Seats ${backdrop.seats} children.`],
           ["Children's chair", `${R.AED(kidsChair.price)} each. ${kidsChair.detail}`],
           ["Children's table", `${SPACE.tableKids} ${R.AED(kidsTable.price)} each.`],
         ])}
         <div class="prose">
-          <p>Kids' chairs and tables are at their standard rates, with no bundle mark-up. ${gathering.name} is ${gathering.items.map(strip).join(", ")}. ${celebration.name} is ${celebration.items.map(strip).join(", ")}.</p>
+          <p>Little Gathering and Little Celebration are kids' chairs and tables at their standard rates, with no bundle mark-up. ${gathering.name} is ${gathering.items.map(strip).join(", ")}. ${celebration.name} is ${celebration.items.map(strip).join(", ")}. ${backdrop.name} is ${backdrop.items.map(strip).join(", ")}.</p>
           <p>${kidsChair.detail} Adult chairs, with a cushioned seat, are on the <a href="/chiavari-chairs/">Chiavari chairs</a> page.</p>
           <p>${KIDS_AGE_NOTE}</p>
           <p>${BUSINESS.deliveryRule}</p>
@@ -798,11 +812,15 @@ ${pages.map(page => `- ${page.h1}: ${abs(page.path)}`).join("\n")}
 
 ## Flower walls
 
-${ITEMS.filter(i => i.unit === "wall").map(i => `- ${i.name.replace("Flower Wall — ", "")}: ${R.AED(i.price)}. ${i.detail} ${i.spaceNote}`).join("\n")}
+${ITEMS.filter(i => i.unit === "wall").map(i => `- ${i.name.replace("Flower Wall — ", "")}: ${R.AED(i.price)} on its own. Adding one to a booking is ${R.AED(i.addonPrice)}. ${i.detail} ${i.spaceNote}`).join("\n")}
 
 ## Adult party collections (16 guests)
 
-${PACKAGES.filter(p => !p.children).map(pkgLine).join("\n")}
+${PACKAGES.filter(p => !p.children && (p.includes["chair-adult"] || 0) > 0).map(pkgLine).join("\n")}
+
+## Photo corner
+
+${PACKAGES.filter(p => p.id === "pkg-photo").map(pkgLine).join("\n")}
 
 ## Children's collections
 
@@ -816,8 +834,8 @@ ${ITEMS.filter(i => i.unit !== "wall").map(i => `- ${i.name}: ${R.AED(i.price)} 
 
 1. Send an enquiry from the availability form (${SITE}#book). It opens WhatsApp.
 2. ${BUSINESS.name} replies with a confirmed quote. ${BUSINESS.responseNote}
-3. A 50% deposit holds the date. The balance is due on or before delivery.
-4. Booking confirmation follows once the deposit arrives.
+3. ${CONFIRMATION.half} ${CONFIRMATION.full}
+4. ${CONFIRMATION.held} ${CONFIRMATION.weekend} Booking confirmation follows once that payment arrives.
 
 ## FAQ
 
