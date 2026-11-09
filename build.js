@@ -408,7 +408,7 @@ function rentalPages() {
   const flowerFaqs = [
     {
       q: "How much does a flower wall cost to rent in Dubai?",
-      a: `Our flower walls are ${R.AED(blush.price)} each on their own, with setup included. ${blush.name.replace("Flower Wall — ", "")} and ${white.name.replace("Flower Wall — ", "")} are the same price. Adding a wall to any booking is ${R.AED(blush.addonPrice)}.`,
+      a: `Our flower walls are ${R.AED(blush.price)} each on their own, with setup included. ${blush.name.replace("Flower Wall — ", "")} and ${white.name.replace("Flower Wall — ", "")} are the same price. Adding a flower wall to a seating package is ${R.AED(blush.addonPrice)}.`,
     },
     {
       q: "How big is the flower wall?",
@@ -416,7 +416,7 @@ function rentalPages() {
     },
     {
       q: "Does a package include a flower wall?",
-      a: `Wall packages include one backdrop, in the colour you choose. ${photo.name} is ${R.AED(photo.price)}. ${essentialsWall.name} is ${R.AED(essentialsWall.price)}. ${styledWall.name} is ${R.AED(styledWall.price)}. ${grand.name} is ${R.AED(grand.price)}. ${backdrop.name} is ${R.AED(backdrop.price)}. Adding another wall to a booking is ${R.AED(blush.addonPrice)}. A wall on its own is ${R.AED(blush.price)}.`,
+      a: `Wall packages include one backdrop, in the colour you choose. ${photo.name} is ${R.AED(photo.price)}. ${essentialsWall.name} is ${R.AED(essentialsWall.price)}. ${styledWall.name} is ${R.AED(styledWall.price)}. ${grand.name} is ${R.AED(grand.price)}. ${backdrop.name} is ${R.AED(backdrop.price)}. Adding a flower wall to a seating package is ${R.AED(blush.addonPrice)}. A wall on its own, or with individual pieces, is ${R.AED(blush.price)}.`,
     },
     {
       q: "Do you deliver the flower wall?",
@@ -525,13 +525,13 @@ function rentalPages() {
         </div>`,
       body: `
         ${facts([
-          ["Price", `${R.AED(blush.price)} per wall on its own. Adding a flower wall to any booking is ${R.AED(blush.addonPrice)}. Setup is included.`],
+          ["Price", `${R.AED(blush.price)} per wall on its own. Adding a flower wall to a seating package is ${R.AED(blush.addonPrice)}. Setup is included.`],
           ["Size", SPACE.flowerWall],
           ["Blush Pink", blush.detail],
           ["White Rose Garden", white.detail],
         ])}
         <div class="prose">
-          <p>Each wall is ${R.AED(blush.price)} on its own. Adding a flower wall to any booking is ${R.AED(blush.addonPrice)}. ${blush.detail} ${white.detail}</p>
+          <p>Each wall is ${R.AED(blush.price)} on its own. Adding a flower wall to a seating package is ${R.AED(blush.addonPrice)}. ${blush.detail} ${white.detail}</p>
           <p>Wall packages include one backdrop, in the colour you choose. ${photo.name} is ${R.AED(photo.price)}. ${essentialsWall.name} is ${R.AED(essentialsWall.price)}. ${styledWall.name} is ${R.AED(styledWall.price)}. ${grand.name} is ${R.AED(grand.price)}. ${backdrop.name} is ${R.AED(backdrop.price)}.</p>
           <p>${BUSINESS.deliveryRule}</p>
           <p>${BUSINESS.rentalNote}</p>
@@ -812,7 +812,7 @@ ${pages.map(page => `- ${page.h1}: ${abs(page.path)}`).join("\n")}
 
 ## Flower walls
 
-${ITEMS.filter(i => i.unit === "wall").map(i => `- ${i.name.replace("Flower Wall — ", "")}: ${R.AED(i.price)} on its own. Adding one to a booking is ${R.AED(i.addonPrice)}. ${i.detail} ${i.spaceNote}`).join("\n")}
+${ITEMS.filter(i => i.unit === "wall").map(i => `- ${i.name.replace("Flower Wall — ", "")}: ${R.AED(i.price)} on its own. Adding one to a seating package is ${R.AED(i.addonPrice)}. ${i.detail} ${i.spaceNote}`).join("\n")}
 
 ## Adult party collections (16 guests)
 

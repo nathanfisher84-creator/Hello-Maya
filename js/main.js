@@ -147,7 +147,7 @@
     </div>
     <div class="bk-wall" id="bkWallChoice" hidden>
       <h4>Included flower wall</h4>
-      <p>This collection includes one wall. Choose the colour. It is not charged again. The other colour can be added below as an extra for ${AED(wallChoices[0].addonPrice)}.</p>
+      <p>This collection includes one wall. Choose the colour. It is not charged again. The other colour can be added below as an extra for ${AED(wallChoices[0].price)}.</p>
       ${wallChoices.map(wall => `
         <label>
           <input type="radio" name="wallColour" value="${wall.id}">
@@ -161,7 +161,7 @@
         <div class="bk-row">
           <div class="bk-row__info">
             <div class="bk-row__name">${i.name}</div>
-            <div class="bk-row__price">${i.unit === "wall" ? `${AED(i.addonPrice)} added to a booking · ${AED(i.price)} on its own` : `${AED(i.price)} / ${i.unit}`}</div>
+            <div class="bk-row__price">${i.unit === "wall" ? `${AED(i.addonPrice)} added to a seating package · ${AED(i.price)} on its own` : `${AED(i.price)} / ${i.unit}`}</div>
             ${i.detail ? `<div class="bk-row__note">${i.detail}</div>` : ""}
             ${i.spaceNote ? `<div class="bk-row__note">${i.spaceNote}</div>` : ""}
           </div>
@@ -183,7 +183,7 @@
     return ITEMS.find(i => i.id === id);
   }
   function wallExtraUnit(item) {
-    return item.addonPrice || item.price;
+    return item.price;
   }
 
   function syncQtyInputs() {

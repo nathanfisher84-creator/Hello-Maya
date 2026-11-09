@@ -137,10 +137,10 @@ const TABLE_DECOR_NOTE = "Décor is the runners, florals and finishing touches f
 const PLACE_SETTINGS = "Dinner and dessert plates, cutlery, wine cups, and napkins with rings, set for this collection's 16 chairs.";
 const PLACE_SETTINGS_NOTE = "Place settings follow the 16 chairs already in the collection. Need more covers, or a different mix? Ask in the enquiry and we will quote them. Materials are the plates, cutlery, cups and ringed napkins we already style with — exact pieces are confirmed on the quote.";
 const WALL_LINE = "One flower wall, Blush Pink or White Rose Garden";
-const WALL_PACKAGE_NOTE = "The wall included here is one backdrop, in the colour you choose. A second wall is not included. If you want both colours, we ask before adding the other for AED 550.";
+const WALL_PACKAGE_NOTE = "The wall included here is one backdrop, in the colour you choose. A second wall is not included. If you want both colours, we ask before adding the other at the standalone wall price.";
 
-/* How a date is confirmed. A wall on its own stays the catalogue price.
-   Adding a wall to a booking uses each wall item's addonPrice. */
+/* How a date is confirmed. A wall on its own, or with individual pieces,
+   stays the catalogue price. addonPrice is only for a seating package. */
 const CONFIRMATION = {
   half: "50% deposit to confirm if the event is more than 7 days away and the total is over AED 500. The balance is due on or before delivery.",
   full: "Full payment to confirm if the event is 7 days away or less, or the total is AED 500 or under.",
@@ -153,6 +153,7 @@ const PACKAGES = [
   {
     id: "pkg1",
     name: "The Essentials",
+    wallAddon: true,
     price: 349,
     includes: { ...ADULT_FURNITURE },
     summary: "16 adult chairs · 2 covered tables",
@@ -164,6 +165,7 @@ const PACKAGES = [
   {
     id: "pkg2",
     name: "The Styled",
+    wallAddon: true,
     price: 449,
     includes: { ...ADULT_FURNITURE },
     summary: "Essentials, plus table décor for both tables",
@@ -177,6 +179,7 @@ const PACKAGES = [
   {
     id: "pkg3",
     name: "The Signature",
+    wallAddon: true,
     price: 649,
     tag: "Most requested",
     featured: true,
@@ -254,6 +257,7 @@ const PACKAGES = [
     id: "pkg-kids-4",
     name: "Little Gathering",
     children: true,
+    wallAddon: true,
     tag: "Children",
     price: priceFromIncludes(LITTLE_GATHERING_INCLUDES),
     includes: { ...LITTLE_GATHERING_INCLUDES },
@@ -271,6 +275,7 @@ const PACKAGES = [
     id: "pkg-kids-8",
     name: "Little Celebration",
     children: true,
+    wallAddon: true,
     tag: "Children",
     price: priceFromIncludes(LITTLE_CELEBRATION_INCLUDES),
     includes: { ...LITTLE_CELEBRATION_INCLUDES },
@@ -289,7 +294,7 @@ const PACKAGES = [
     name: "Little Backdrop",
     children: true,
     tag: "Children",
-    price: 749,
+    price: 729,
     includes: { ...LITTLE_CELEBRATION_INCLUDES, "flower-wall": 1 },
     seats: 8,
     ageNote: KIDS_AGE_NOTE,
@@ -359,7 +364,7 @@ const FAQ = (() => {
   return [
     {
       q: "How much does it cost to rent a flower wall in Dubai?",
-      a: `Our flower walls are ${aed(price("wall-blush"))} each on their own, with setup included. We have two: Blush Pink and White Rose Garden. Adding a wall to any booking is ${aed(wallAddon)}. Wall packages: The Photo Corner (${aed(pkg("pkg-photo").price)}, one wall and one covered table); Essentials with Wall (${aed(pkg("pkg-essentials-wall").price)}); Styled with Wall (${aed(pkg("pkg-styled-wall").price)}); The Grand (${aed(pkg("pkg4").price)}, Signature plus one wall); Little Backdrop (${aed(pkg("pkg-kids-backdrop").price)}, Little Celebration plus one wall).`,
+      a: `Our flower walls are ${aed(price("wall-blush"))} each on their own, with setup included. We have two: Blush Pink and White Rose Garden. Adding a flower wall to a seating package is ${aed(wallAddon)}. Wall packages: The Photo Corner (${aed(pkg("pkg-photo").price)}, one wall and one covered table); Essentials with Wall (${aed(pkg("pkg-essentials-wall").price)}); Styled with Wall (${aed(pkg("pkg-styled-wall").price)}); The Grand (${aed(pkg("pkg4").price)}, Signature plus one wall); Little Backdrop (${aed(pkg("pkg-kids-backdrop").price)}, Little Celebration plus one wall).`,
     },
     {
       q: "How much is Chiavari chair and table rental?",

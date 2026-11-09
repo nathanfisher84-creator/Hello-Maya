@@ -27,11 +27,11 @@ Everything editable lives in **`js/data.js`**:
 - `PACKAGES` — adult collections and the children's collections. Essentials 349,
   Styled 449, Signature 649, Photo Corner 749, Essentials with Wall 899,
   Styled with Wall 999, Grand 1,199, Little Gathering 95, Little Celebration 190,
-  Little Backdrop 749. Little Gathering and Little Celebration are the kids'
+  Little Backdrop 729. Little Gathering and Little Celebration are the kids'
   chair and table rates added together.
-- `ITEMS` — à-la-carte items. A flower wall on its own is AED 675. Adding a
-  flower wall to a booking is AED 550. Chair and table unit prices are the
-  rates the packages build on.
+- `ITEMS` — à-la-carte items. A flower wall on its own, or with individual
+  pieces, is AED 675. Adding a flower wall to a seating package is AED 550.
+  Chair and table unit prices are the rates the packages build on.
 - `BUSINESS.deliveryRule` — the one delivery sentence used everywhere:
   free in Damac Hills 2, AED 150 elsewhere in Dubai, collection included.
 - `SPACE` — measured sizes in centimetres for the flower walls and tables.

@@ -47,7 +47,15 @@ assert.strictEqual(byId("pkg4").price, 1199, "Grand test price");
 assert.strictEqual(byId("pkg-photo").price, 749, "Photo Corner test price");
 assert.strictEqual(byId("pkg-essentials-wall").price, 899, "Essentials with Wall test price");
 assert.strictEqual(byId("pkg-styled-wall").price, 999, "Styled with Wall test price");
-assert.strictEqual(byId("pkg-kids-backdrop").price, 749, "Little Backdrop test price");
+assert.strictEqual(byId("pkg-kids-backdrop").price, 729, "Little Backdrop test price");
+assert.strictEqual(byId("pkg1").wallAddon, true);
+assert.strictEqual(byId("pkg2").wallAddon, true);
+assert.strictEqual(byId("pkg3").wallAddon, true);
+assert.strictEqual(byId("pkg-kids-4").wallAddon, true);
+assert.strictEqual(byId("pkg-kids-8").wallAddon, true);
+assert.ok(!byId("pkg-photo").wallAddon);
+assert.ok(!byId("pkg4").wallAddon);
+assert.ok(!byId("pkg-kids-backdrop").wallAddon);
 assert.strictEqual(byId("pkg-kids-backdrop").seats, 8);
 assert.ok(byId("pkg-photo").includes["flower-wall"] === 1);
 assert.ok(byId("pkg-photo").includes["chair-adult"] == null);
@@ -105,7 +113,7 @@ assert.strictEqual(extraChairs.total, 1199 + 2 * 15);
 const twoWalls = quoteDesign("pkg4", { "wall-blush": 1, "wall-white": 1 }, "dubai", false);
 assert.strictEqual(twoWalls.total, 1199 + 150);
 assert.strictEqual(twoWalls.unconfirmedWalls.length, 1);
-assert.strictEqual(twoWalls.unconfirmedWalls[0].amount, 550);
+assert.strictEqual(twoWalls.unconfirmedWalls[0].amount, 675);
 
 /* If White Rose was already the included colour, it stays included and Blush is the extra. */
 const preferred = buildQuote(catalog, {
@@ -121,7 +129,7 @@ assert.strictEqual(preferred.unconfirmedWalls[0].id, "wall-blush");
 assert.strictEqual(preferred.total, 1199 + 150);
 
 const twoWallsYes = quoteDesign("pkg4", { "wall-blush": 1, "wall-white": 1 }, "dubai", true);
-assert.strictEqual(twoWallsYes.total, 1199 + 550 + 150);
+assert.strictEqual(twoWallsYes.total, 1199 + 675 + 150);
 assert.strictEqual(twoWallsYes.unconfirmedWalls.length, 0);
 assert.strictEqual(chargedWall(twoWallsYes).length, 1);
 
@@ -131,11 +139,13 @@ assert.strictEqual(duplicate.total, 1199 + 150);
 assert.strictEqual(duplicate.capped.length, 1);
 assert.strictEqual(duplicate.capped[0].kept, 1);
 
-/* A wall added to a booking is AED 550, which matches the wall packages. */
+/* AED 550 only when a wall is added to a seating package. */
 const styledPlusWall = quoteDesign("pkg2", { "wall-white": 1 }, "dubai", false);
 assert.strictEqual(styledPlusWall.total, 449 + 550 + 150);
 assert.strictEqual(quoteDesign("pkg1", { "wall-blush": 1 }, "damac", false).total, 899);
 assert.strictEqual(quoteDesign("pkg3", { "wall-white": 1 }, "damac", false).total, 1199);
+assert.strictEqual(quoteDesign("pkg-kids-8", { "wall-white": 1 }, "damac", false).total, 740);
+assert.strictEqual(quoteDesign("pkg-kids-4", { "wall-blush": 1 }, "damac", false).total, 95 + 550);
 
 /* No package: a wall on its own stays AED 675. Two walls alone stay 675 each. */
 const wallOnly = quoteDesign(null, { "wall-white": 1 }, "dubai", false);
@@ -143,18 +153,19 @@ assert.strictEqual(wallOnly.total, 675 + 150);
 const wallsOnly = quoteDesign(null, { "wall-white": 1, "wall-blush": 1 }, "damac", false);
 assert.strictEqual(wallsOnly.total, 675 + 675);
 
-/* A wall added to other pieces, with no package, is the AED 550 add-on. */
+/* Individual pieces plus a wall stay at the standalone wall price. */
 const tableAndWall = quoteDesign(null, { "table-adult": 1, "wall-white": 1 }, "damac", false);
-assert.strictEqual(tableAndWall.total, 75 + 550);
+assert.strictEqual(tableAndWall.total, 750);
+assert.strictEqual(quoteDesign(null, { "chair-adult": 2, "wall-blush": 1 }, "damac", false).total, 30 + 675);
 
-/* Named wall packages bill the included wall once. */
+/* Named wall packages bill the included wall once. A further wall is AED 675. */
 assert.strictEqual(quoteDesign("pkg-photo", { "wall-blush": 1, "table-adult": 1 }, "damac", false).total, 749);
 assert.strictEqual(quoteDesign("pkg-kids-backdrop", {
   "wall-white": 1, "table-kids": 2, "chair-kids": 8,
-}, "damac", false).total, 749);
+}, "damac", false).total, 729);
 assert.strictEqual(quoteDesign("pkg-photo", {
   "wall-blush": 1, "wall-white": 1, "table-adult": 1,
-}, "damac", true).total, 749 + 550);
+}, "damac", true).total, 749 + 675);
 
 /* Children's package inclusions are not charged again. */
 const kidsExact = quoteDesign("pkg-kids-4", { "table-kids": 1, "chair-kids": 4 }, "damac", false);
@@ -174,6 +185,7 @@ assert.strictEqual(fromForm.total, 1199 + 150);
 
 const page = fs.readFileSync("index.html", "utf8");
 const main = fs.readFileSync("js/main.js", "utf8");
+const data = fs.readFileSync("js/data.js", "utf8");
 assert.ok(!/right away/i.test(page + main), "no instant-availability promise");
 assert.ok(!page.includes("AED 299") && !page.includes("AED 999"));
 assert.ok(!/includes delivery/i.test(page + main));
@@ -184,7 +196,9 @@ assert.ok(main.includes("BUSINESS.deliveryRule"));
 assert.ok(main.includes("designToExtras"));
 assert.ok(/Check availability/.test(page));
 assert.ok(page.includes("The Photo Corner is a wall and one covered table"));
-assert.ok(page.includes("Adding a flower wall to any booking is <strong>AED 550</strong>"));
+assert.ok(page.includes("Adding a flower wall to a seating package is <strong>AED 550</strong>"));
+assert.ok(!/any booking/i.test(page + main + data));
+assert.ok(!/any booking/i.test(fs.readFileSync("build.js", "utf8")));
 assert.ok(page.includes("50% deposit to confirm if the event is more than 7 days away and the total is over AED 500."));
 assert.ok(page.includes("Full payment to confirm if the event is 7 days away or less, or the total is AED 500 or under."));
 assert.ok(page.includes("Friday, Saturday and Sunday dates are not held for more than 24 hours without that confirmation payment."));
@@ -193,7 +207,6 @@ assert.ok(!/a deposit holds the date/i.test(page + main));
 assert.ok(!/\bVAT\b/.test(page + main));
 assert.ok(!/Licensed/i.test(page + main));
 
-const data = fs.readFileSync("js/data.js", "utf8");
 assert.ok(!/50% deposit holds the date/i.test(data));
 assert.ok(!/\bVAT\b/.test(data));
 assert.ok(!/Licensed/i.test(data));

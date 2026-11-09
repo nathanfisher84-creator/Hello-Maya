@@ -1,8 +1,9 @@
 /* Quote math shared by the booking form, the visualizer, and node tests.
    Package inclusions are credited before anything is charged.
    A flower wall inside a package is not billed again. A further wall is an
-   add-on only after the customer confirms. A wall on its own uses the
-   catalogue price. A wall added to any other booking uses addonPrice. */
+   add-on only after the customer confirms. A wall on its own, or with
+   individual pieces, uses the catalogue price. addonPrice applies only when
+   the wall is added to a seating package marked wallAddon. */
 (function (root) {
   "use strict";
 
@@ -19,13 +20,12 @@
     return (pkg && pkg.includes && pkg.includes["flower-wall"]) || 0;
   }
 
-  function addedToBooking(pkg, counts, items) {
-    if (pkg) return true;
-    return items.some(item => !isWallItem(item) && (counts[item.id] || 0) > 0);
+  function seatingWallAddon(pkg) {
+    return !!(pkg && pkg.wallAddon);
   }
 
-  function wallUnitPrice(item, withBooking) {
-    if (isWallItem(item) && withBooking && item.addonPrice) return item.addonPrice;
+  function wallUnitPrice(item, seatingAddon) {
+    if (isWallItem(item) && seatingAddon && item.addonPrice) return item.addonPrice;
     return item.price;
   }
 
@@ -92,7 +92,7 @@
             id: item.id,
             qty: remainder,
             name: item.name,
-            amount: remainder * wallUnitPrice(item, true),
+            amount: remainder * item.price,
           });
         }
       } else {
@@ -153,15 +153,15 @@
       });
     }
 
-    const withBooking = addedToBooking(pkg, selection.counts, catalog.items);
+    const seatingAddon = seatingWallAddon(pkg);
     catalog.items.forEach(item => {
       const qty = selection.counts[item.id] || 0;
       if (qty <= 0) return;
       const additionalWall = isWallItem(item) && wallCredit(pkg) > 0;
-      const unit = wallUnitPrice(item, withBooking);
+      const unit = wallUnitPrice(item, seatingAddon);
       const addedWall = isWallItem(item) && unit !== item.price && !additionalWall;
       lines.push({
-        label: `${qty} × ${item.name}${additionalWall ? " (additional wall)" : ""}${addedWall ? " (added to this booking)" : ""}`,
+        label: `${qty} × ${item.name}${additionalWall ? " (additional wall)" : ""}${addedWall ? " (added to this seating package)" : ""}`,
         amount: qty * unit,
         kind: additionalWall || addedWall ? "addon" : "item",
       });
