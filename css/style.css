@@ -279,6 +279,7 @@ form label.bk-accept{display:flex;gap:.7rem;align-items:flex-start;text-transfor
 form label.bk-accept input{width:18px;height:18px;margin-top:.2rem;flex:0 0 auto}
 .bk-accept button,.text-link{background:none;border:none;padding:0;color:var(--rose-deep);text-decoration:underline;text-underline-offset:.15em;font:inherit;letter-spacing:0;text-transform:none;cursor:pointer}
 .booking__notice{background:#f8efe4;border:1px solid var(--gold);border-radius:11px;padding:.8rem 1rem;font-size:.84rem;color:var(--ink);margin:0 0 .8rem}
+.closure{max-width:760px;margin-left:auto;margin-right:auto}
 .booking__fine,.booking__rule{font-size:.78rem;color:var(--ink-soft);line-height:1.45;margin:.55rem 0 0}
 .booking__summary .is-included span:last-child{color:var(--rose-deep)}
 .viz__fine{font-size:.75rem;color:var(--ink-soft);line-height:1.45;margin-top:.7rem}

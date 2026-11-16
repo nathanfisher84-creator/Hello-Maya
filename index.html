@@ -276,6 +276,7 @@
   <p class="section__eyebrow">Availability</p>
   <h2 class="section__title">Check availability</h2>
   <p class="section__sub">Tell us what you need and when, and we'll reply on WhatsApp with a confirmed quote. <span data-response-copy></span></p>
+  <p class="booking__notice closure" data-closure-notice hidden>We are closed from 28 December 2026 to 10 January 2027. We cannot take bookings or deliver on those dates. We are happy to help with any other date.</p>
 
   <ol class="steps">
     <li><span>Step 1</span><strong>Enquiry</strong>Check availability with this form. The date is not held yet.</li>
@@ -286,6 +287,7 @@
 
   <div class="booking">
     <div class="booking__items">
+      <p class="booking__notice closure" data-closure-notice hidden>We are closed from 28 December 2026 to 10 January 2027. We cannot take bookings or deliver on those dates. We are happy to help with any other date.</p>
       <h3><span class="booking__step">01</span>Your selection</h3>
       <div id="bookingItems"><!-- rendered by js --></div>
     </div>
@@ -301,6 +303,7 @@
           <label>Event date<input type="date" id="bkDate" required></label>
           <label>Start time<input type="time" id="bkTime" value="16:00" required></label>
         </div>
+        <p class="booking__notice" id="bkClosureWarn" hidden>We are closed from 28 December 2026 to 10 January 2027. We cannot take bookings or deliver on those dates. We are happy to help with any other date.</p>
         <div class="field-row">
           <label>Rental duration
             <select id="bkDuration">
@@ -394,6 +397,7 @@
 <script src="js/data.js" defer></script>
 <script src="js/render.js" defer></script>
 <script src="js/pricing.js" defer></script>
+<script src="js/closure.js" defer></script>
 <script src="js/nav.js" defer></script>
 <script src="js/main.js" defer></script>
 <script src="js/reviews.js" defer></script>

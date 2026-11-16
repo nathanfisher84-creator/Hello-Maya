@@ -462,11 +462,33 @@
   renderSummary();
 
   /* ── date min = today ── */
-  $("#bkDate").min = new Date().toISOString().split("T")[0];
+  const dateInput = $("#bkDate");
+  dateInput.min = new Date().toISOString().split("T")[0];
+  const closureToday = HelloMayaClosure.dubaiDateString(new Date());
+  if (HelloMayaClosure.closureNoticeVisible(closureToday)) {
+    document.querySelectorAll("[data-closure-notice]").forEach(el => {
+      el.hidden = false;
+      el.textContent = HelloMayaClosure.MESSAGE;
+    });
+  }
+  const closureWarn = $("#bkClosureWarn");
+  function syncClosureDate() {
+    const closed = HelloMayaClosure.isClosureDate(dateInput.value);
+    dateInput.setCustomValidity(closed ? HelloMayaClosure.MESSAGE : "");
+    if (closureWarn) closureWarn.hidden = !closed;
+    return closed;
+  }
+  dateInput.addEventListener("input", syncClosureDate);
+  dateInput.addEventListener("change", syncClosureDate);
 
   /* ── submit → WhatsApp enquiry. This does not reserve the date. ── */
   $("#bookingForm").addEventListener("submit", event => {
     event.preventDefault();
+    if (syncClosureDate()) {
+      dateInput.reportValidity();
+      dateInput.focus();
+      return;
+    }
     const quote = HelloMayaPricing.buildQuote(catalog, selectionForQuote());
     if (!quote.lines.length) {
       alert("Please choose a package or at least one item first.");
