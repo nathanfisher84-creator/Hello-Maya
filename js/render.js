@@ -52,7 +52,15 @@ var HelloMayaRender = (function () {
       </a>`).join("");
   }
 
-  const adultFrom = () => Math.min(...PACKAGES.filter(p => !p.children).map(p => p.price));
+  const adultFrom = () => Math.min(...livePackages().filter(p => !p.children).map(p => p.price));
 
-  return { AED, packageCard, termsMarkup, faqMarkup, igTiles, adultFrom };
+  function deliveryZonesMarkup() {
+    return DELIVERY_ZONES.map(zone => `
+      <details class="zone">
+        <summary><strong>${zone.name}</strong> AED ${zone.fee.toLocaleString("en-US")}. ${zone.covers}</summary>
+        <ul>${zone.communities.map(place => `<li>${place}</li>`).join("")}</ul>
+      </details>`).join("");
+  }
+
+  return { AED, packageCard, termsMarkup, faqMarkup, igTiles, adultFrom, deliveryZonesMarkup };
 })();

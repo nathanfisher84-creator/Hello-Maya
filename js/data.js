@@ -9,17 +9,134 @@ const BUSINESS = {
   whatsapp: "971585256044",           // international format, no +
   whatsappDisplay: "+971 58 525 6044",
   instagram: "hellomaya_dxb",
-  deliveryFeeDubai: 150,              // AED, outside Damac Hills 2
   /* One sentence, used everywhere a price is shown. Do not paraphrase
      on the page — the site copies this string into every delivery line. */
-  deliveryRule: "Free delivery in Damac Hills 2. AED 150 elsewhere in Dubai. That fee covers one delivery and one collection, so collection is not charged again. We dismantle and collect at the end of the rental.",
+  deliveryRule: "Delivery is free in Damac Hills 2, AED 150 for nearby communities, AED 250 for central Dubai, and AED 350 for the far side of Dubai. That fee covers one delivery and one collection.",
   /* Short form for price cards. Must say the same thing as deliveryRule. */
-  deliveryShort: "Free delivery in Damac Hills 2 · AED 150 elsewhere in Dubai",
+  deliveryShort: "Delivery is free in Damac Hills 2, AED 150 for nearby communities, AED 250 for central Dubai, and AED 350 for the far side of Dubai. That fee covers one delivery and one collection.",
+  minimumOrder: "There is a minimum order of AED 350 for delivery in Damac Hills 2, and AED 500 for delivery elsewhere in Dubai. That minimum is the rental total before delivery.",
+  wallOffer: "A flower wall can be added to a seating order for AED 395 until 14 January 2027. A wall on its own stays AED 675.",
+  outsideDubai: "Bookings outside Dubai are not accepted.",
   site: "https://www.hellomayaevents.com/",
   area: ["Dubai", "Damac Hills 2"],
   rentalNote: "Up to 8 hours of rental, starting once setup is complete.",
   responseNote: "We usually reply within one business day, between 10:00 and 18:00 Gulf Standard Time. A message outside those hours is answered the next working day.",
 };
+
+/* Four Dubai zones. Fee covers one delivery and one collection.
+   minimum is the rental total before that fee. */
+const DELIVERY_ZONES = [
+  {
+    id: "local",
+    name: "Local",
+    fee: 0,
+    minimum: 350,
+    covers: "Damac Hills 2 only, all clusters including Zinnia.",
+    communities: ["Damac Hills 2 (all clusters, including Zinnia)"],
+  },
+  {
+    id: "nearby",
+    name: "Nearby",
+    fee: 150,
+    minimum: 500,
+    covers: "Inland communities on the Damac Hills 2, Dubailand, Al Qudra and Ranches side of town.",
+    communities: [
+      "Academic City",
+      "Akoya and Akoya Oxygen",
+      "Al Barari",
+      "Al Warsan",
+      "Arabian Ranches 1, 2 and 3 (including Mira, Reem and the other Ranches villages)",
+      "Damac Hills (the original community, including Sidra)",
+      "Dubai Hills Estate",
+      "Dubai Science Park",
+      "Dubai Silicon Oasis",
+      "Dubai Sports City",
+      "Dubai Studio City",
+      "Dubailand (including Falcon City of Wonders, Living Legends, Wadi Al Safa and Layan)",
+      "Emirates Hills, The Springs, The Meadows and The Lakes",
+      "International City",
+      "Jumeirah Golf Estates",
+      "Liwan",
+      "Meydan",
+      "Motor City",
+      "Mudon",
+      "Nad Al Sheba",
+      "Remraam",
+      "Serena",
+      "The Sustainable City",
+      "The Villa",
+      "Tilal Al Ghaf",
+      "Town Square",
+      "Victory Heights",
+      "Villanova",
+    ],
+  },
+  {
+    id: "central",
+    name: "Central Dubai",
+    fee: 250,
+    minimum: 500,
+    covers: "The Sheikh Zayed Road, Jumeirah, Downtown and Marina corridor.",
+    communities: [
+      "Al Barsha (including Al Barsha South and the Mall of the Emirates area)",
+      "Al Jaddaf",
+      "Al Khail Gate",
+      "Al Quoz (including Al Quoz Industrial)",
+      "Al Safa, Al Wasl, City Walk and Umm Suqeim",
+      "Al Sufouh, Dubai Media City, Dubai Internet City and Knowledge Park",
+      "Bluewaters Island",
+      "Business Bay",
+      "DIFC",
+      "Downtown Dubai",
+      "Dubai Creek Harbour",
+      "Dubai Design District (d3)",
+      "Dubai Harbour",
+      "Dubai Healthcare City",
+      "Dubai Marina",
+      "Dubai World Trade Centre and the Trade Centre area",
+      "JBR",
+      "Jumeirah 1, 2 and 3",
+      "Jumeirah Lakes Towers (JLT)",
+      "Jumeirah Village Circle (JVC)",
+      "Jumeirah Village Triangle (JVT)",
+      "Za'abeel",
+    ],
+  },
+  {
+    id: "far",
+    name: "Far side",
+    fee: 350,
+    minimum: 500,
+    covers: "Old Dubai and the north, Palm Jumeirah, and the Jebel Ali and Dubai South side.",
+    communities: [
+      "Al Awir",
+      "Al Furjan",
+      "Al Khawaneej",
+      "Al Mamzar",
+      "Al Mizhar",
+      "Al Nahda (Dubai)",
+      "Al Qusais",
+      "Al Rashidiya",
+      "Al Warqa",
+      "Bur Dubai (including Al Karama, Oud Metha and Al Raffa)",
+      "Deira (including Al Rigga, Naif and Al Murar)",
+      "Discovery Gardens, The Gardens and the Ibn Battuta area",
+      "Dubai Festival City",
+      "Dubai Investment Park (DIP)",
+      "Dubai South and Expo City",
+      "Hor Al Anz",
+      "Jebel Ali (including Jebel Ali Village and Jebel Ali Industrial)",
+      "Mirdif",
+      "Muhaisnah",
+      "Palm Jumeirah",
+    ],
+  },
+];
+BUSINESS.zones = DELIVERY_ZONES;
+
+function livePackages() {
+  return PACKAGES.filter(p => !p.paused);
+}
 
 /* Instagram carousel.
    To show LIVE embedded Instagram posts: open a post on instagram.com,
@@ -58,7 +175,7 @@ const ITEMS = [
     id: "wall-blush",
     name: "Flower Wall — Blush Pink",
     price: 675,
-    addonPrice: 550,
+    addonPrice: 395,
     unit: "wall",
     max: 1,
     vizKey: "wallBlush",
@@ -69,7 +186,7 @@ const ITEMS = [
     id: "wall-white",
     name: "Flower Wall — White Rose Garden",
     price: 675,
-    addonPrice: 550,
+    addonPrice: 395,
     unit: "wall",
     max: 1,
     vizKey: "wallWhite",
@@ -137,10 +254,12 @@ const TABLE_DECOR_NOTE = "Décor is the runners, florals and finishing touches f
 const PLACE_SETTINGS = "Dinner and dessert plates, cutlery, wine cups, and napkins with rings, set for this collection's 16 chairs.";
 const PLACE_SETTINGS_NOTE = "Place settings follow the 16 chairs already in the collection. Need more covers, or a different mix? Ask in the enquiry and we will quote them. Materials are the plates, cutlery, cups and ringed napkins we already style with — exact pieces are confirmed on the quote.";
 const WALL_LINE = "One flower wall, Blush Pink or White Rose Garden";
-const WALL_PACKAGE_NOTE = "The wall included here is one backdrop, in the colour you choose. A second wall is not included. If you want both colours, we ask before adding the other at the standalone wall price.";
+const WALL_PACKAGE_NOTE = "The wall included here is one backdrop, in the colour you choose. A second wall is not included. A second wall is AED 395 until 14 January 2027, when both colours are free.";
+const TABLEWARE_PER_GUEST = 25;
+const TABLEWARE_NOTE = "Tableware is AED 25 a guest for the 16 chairs in this collection.";
 
-/* How a date is confirmed. A wall on its own, or with individual pieces,
-   stays the catalogue price. addonPrice is only for a seating package. */
+/* How a date is confirmed. A wall on its own stays AED 675.
+   addonPrice applies when the order includes chairs or tables. */
 const CONFIRMATION = {
   half: "50% deposit to confirm if the event is more than 7 days away and the total is over AED 500. The balance is due on or before delivery.",
   full: "Full payment to confirm if the event is 7 days away or less, or the total is AED 500 or under.",
@@ -180,7 +299,7 @@ const PACKAGES = [
     id: "pkg3",
     name: "The Signature",
     wallAddon: true,
-    price: 649,
+    price: 849,
     tag: "Most requested",
     featured: true,
     includes: { ...ADULT_FURNITURE },
@@ -191,7 +310,7 @@ const PACKAGES = [
       TABLE_DECOR,
       PLACE_SETTINGS,
     ],
-    notes: [TABLE_DECOR_NOTE, PLACE_SETTINGS_NOTE],
+    notes: [TABLE_DECOR_NOTE, PLACE_SETTINGS_NOTE, TABLEWARE_NOTE],
   },
   {
     id: "pkg-photo",
@@ -209,7 +328,7 @@ const PACKAGES = [
   {
     id: "pkg-essentials-wall",
     name: "Essentials with Wall",
-    price: 899,
+    paused: true,
     includes: { ...ADULT_FURNITURE, "flower-wall": 1 },
     summary: "Essentials plus one flower wall",
     items: [
@@ -222,7 +341,7 @@ const PACKAGES = [
   {
     id: "pkg-styled-wall",
     name: "Styled with Wall",
-    price: 999,
+    paused: true,
     includes: { ...ADULT_FURNITURE, "flower-wall": 1 },
     summary: "Styled plus one flower wall",
     items: [
@@ -236,7 +355,7 @@ const PACKAGES = [
   {
     id: "pkg4",
     name: "The Grand",
-    price: 1199,
+    paused: true,
     tag: "With flower wall",
     includes: { ...ADULT_FURNITURE, "flower-wall": 1 },
     summary: "Signature, plus one flower wall (you choose the colour)",
@@ -293,8 +412,8 @@ const PACKAGES = [
     id: "pkg-kids-backdrop",
     name: "Little Backdrop",
     children: true,
+    paused: true,
     tag: "Children",
-    price: 729,
     includes: { ...LITTLE_CELEBRATION_INCLUDES, "flower-wall": 1 },
     seats: 8,
     ageNote: KIDS_AGE_NOTE,
@@ -337,7 +456,7 @@ const POLICY = {
     },
     {
       title: "Delivery, rental time and collection",
-      body: BUSINESS.deliveryRule + " " + BUSINESS.rentalNote + " We agree the collection time when the booking is confirmed.",
+      body: BUSINESS.deliveryRule + " " + BUSINESS.minimumOrder + " " + BUSINESS.outsideDubai + " " + BUSINESS.rentalNote + " We agree the collection time when the booking is confirmed.",
     },
     {
       title: "Prices",
@@ -353,8 +472,8 @@ const FAQ = (() => {
   const aed = n => "AED " + n.toLocaleString("en-US");
   const price = id => ITEMS.find(i => i.id === id).price;
   const pkg = id => PACKAGES.find(p => p.id === id);
-  const adult = PACKAGES.filter(p => !p.children);
-  const kids = PACKAGES.filter(p => p.children);
+  const adult = livePackages().filter(p => !p.children);
+  const kids = livePackages().filter(p => p.children);
   const listJoin = parts => {
     if (parts.length < 2) return parts.join("");
     if (parts.length === 2) return parts.join(" and ");
@@ -364,7 +483,7 @@ const FAQ = (() => {
   return [
     {
       q: "How much does it cost to rent a flower wall in Dubai?",
-      a: `Our flower walls are ${aed(price("wall-blush"))} each on their own, with setup included. We have two: Blush Pink and White Rose Garden. Adding a flower wall to a seating package is ${aed(wallAddon)}. Wall packages: The Photo Corner (${aed(pkg("pkg-photo").price)}, one wall and one covered table); Essentials with Wall (${aed(pkg("pkg-essentials-wall").price)}); Styled with Wall (${aed(pkg("pkg-styled-wall").price)}); The Grand (${aed(pkg("pkg4").price)}, Signature plus one wall); Little Backdrop (${aed(pkg("pkg-kids-backdrop").price)}, Little Celebration plus one wall).`,
+      a: `Our flower walls are ${aed(price("wall-blush"))} each on their own, with setup included. We have two: Blush Pink and White Rose Garden. ${BUSINESS.wallOffer} The Photo Corner (${aed(pkg("pkg-photo").price)}) is one wall and one covered table.`,
     },
     {
       q: "How much is Chiavari chair and table rental?",
@@ -377,7 +496,7 @@ const FAQ = (() => {
     },
     {
       q: "Do you deliver across Dubai?",
-      a: BUSINESS.deliveryRule,
+      a: BUSINESS.deliveryRule + " " + BUSINESS.minimumOrder + " " + BUSINESS.outsideDubai,
     },
     {
       q: "Is setup included, and how long can I keep the rentals?",
@@ -389,7 +508,7 @@ const FAQ = (() => {
     },
     {
       q: "Do you rent for children's parties?",
-      a: `Yes. We have child-sized Chiavari chairs and lower tables. ${listJoin(kids.map(p => p.id === "pkg-kids-backdrop" ? `${p.name} (${p.summary}) seats ${p.seats} for ${aed(p.price)}` : `${p.name} seats ${p.seats} for ${aed(p.price)}`))}. Tell us the children's ages and we'll confirm the fit.`,
+      a: `Yes. We have child-sized Chiavari chairs and lower tables. ${listJoin(kids.map(p => `${p.name} seats ${p.seats} for ${aed(p.price)}`))}. Tell us the children's ages and we'll confirm the fit.`,
     },
     {
       q: "Can I see how the setup will look before I book?",

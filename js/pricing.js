@@ -1,9 +1,9 @@
 /* Quote math shared by the booking form, the visualizer, and node tests.
    Package inclusions are credited before anything is charged.
    A flower wall inside a package is not billed again. A further wall is an
-   add-on only after the customer confirms. A wall on its own, or with
-   individual pieces, uses the catalogue price. addonPrice applies only when
-   the wall is added to a seating package marked wallAddon. */
+   add-on only after the customer confirms. addonPrice applies when the order
+   includes chairs or tables, including a second wall. A wall with no chairs
+   or tables stays at the catalogue price. */
 (function (root) {
   "use strict";
 
@@ -20,13 +20,24 @@
     return (pkg && pkg.includes && pkg.includes["flower-wall"]) || 0;
   }
 
-  function seatingWallAddon(pkg) {
-    return !!(pkg && pkg.wallAddon);
+  function orderHasSeating(pkg, counts, items) {
+    const includes = (pkg && pkg.includes) || {};
+    const seated = ["chair-adult", "chair-kids", "table-adult", "table-kids"];
+    if (seated.some(id => (includes[id] || 0) > 0)) return true;
+    return (items || []).some(item => {
+      if (item.unit !== "chair" && item.unit !== "table") return false;
+      return (counts && counts[item.id] || 0) > 0;
+    });
   }
 
-  function wallUnitPrice(item, seatingAddon) {
-    if (isWallItem(item) && seatingAddon && item.addonPrice) return item.addonPrice;
+  function wallUnitPrice(item, seatingOrder) {
+    if (isWallItem(item) && seatingOrder && item.addonPrice) return item.addonPrice;
     return item.price;
+  }
+
+  function zoneFor(catalog, location) {
+    const zones = (catalog.business && catalog.business.zones) || [];
+    return zones.find(zone => zone.id === location) || null;
   }
 
   /**
@@ -92,7 +103,7 @@
             id: item.id,
             qty: remainder,
             name: item.name,
-            amount: remainder * item.price,
+            amount: remainder * wallUnitPrice(item, orderHasSeating(pkg, extras, catalog.items)),
           });
         }
       } else {
@@ -108,7 +119,7 @@
    * selection.countMode "design": counts are absolute design quantities.
    * selection.extraWallConfirmed: bill walls beyond the included one.
    * selection.wallColour: included wall item id (extras mode).
-   * selection.location: "damac" (free) or "dubai" (delivery fee).
+   * selection.location: a delivery zone id (local, nearby, central, far).
    */
   function buildQuote(catalog, selection) {
     const mode = selection.countMode || "extras";
@@ -153,32 +164,38 @@
       });
     }
 
-    const seatingAddon = seatingWallAddon(pkg);
+    const seatingOrder = orderHasSeating(pkg, selection.counts, catalog.items);
     catalog.items.forEach(item => {
       const qty = selection.counts[item.id] || 0;
       if (qty <= 0) return;
       const additionalWall = isWallItem(item) && wallCredit(pkg) > 0;
-      const unit = wallUnitPrice(item, seatingAddon);
+      const unit = wallUnitPrice(item, seatingOrder);
       const addedWall = isWallItem(item) && unit !== item.price && !additionalWall;
       lines.push({
-        label: `${qty} × ${item.name}${additionalWall ? " (additional wall)" : ""}${addedWall ? " (added to this seating package)" : ""}`,
+        label: `${qty} × ${item.name}${additionalWall ? " (additional wall)" : ""}${addedWall ? " (added to this seating order)" : ""}`,
         amount: qty * unit,
         kind: additionalWall || addedWall ? "addon" : "item",
       });
     });
 
-    const delivery = selection.location === "dubai" ? catalog.business.deliveryFeeDubai : 0;
-    const total = lines.reduce((sum, line) => sum + line.amount, 0) + delivery;
+    const zone = zoneFor(catalog, selection.location);
+    const delivery = zone ? zone.fee : 0;
+    const rental = lines.reduce((sum, line) => sum + line.amount, 0);
+    const minimum = zone ? zone.minimum : 0;
     return {
       lines,
       delivery,
-      total,
+      rental,
+      minimum,
+      belowMinimum: !!(zone && rental < minimum),
+      zone,
+      total: rental + delivery,
       unconfirmedWalls: [],
       capped: [],
     };
   }
 
-  const api = { buildQuote, designToExtras, isWallItem, wallCredit, wallUnitPrice };
+  const api = { buildQuote, designToExtras, isWallItem, wallCredit, wallUnitPrice, orderHasSeating };
   root.HelloMayaPricing = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

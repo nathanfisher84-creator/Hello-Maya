@@ -69,7 +69,7 @@ button{font-family:inherit;cursor:pointer}
 .hero__badges strong{color:var(--ink);font-weight:500}
 .hero__img{position:relative}
 .hero__img img{border-radius:300px 300px var(--radius) var(--radius);box-shadow:var(--shadow);aspect-ratio:4/5.1;object-fit:cover;width:100%}
-.hero__card{position:absolute;bottom:-1.4rem;left:-1.8rem;background:var(--white);border-radius:var(--radius);padding:1.1rem 1.5rem;box-shadow:var(--shadow);font-size:.78rem;color:var(--ink-soft);max-width:210px;border:1px solid var(--line)}
+.hero__card{position:absolute;bottom:-1.4rem;left:-1.8rem;background:var(--white);border-radius:var(--radius);padding:1.1rem 1.5rem;box-shadow:var(--shadow);font-size:.78rem;color:var(--ink-soft);max-width:260px;border:1px solid var(--line)}
 .hero__card span{display:block;font-family:var(--serif);font-size:1.5rem;font-weight:600;color:var(--ink)}
 
 /* ── sections ── */
@@ -107,6 +107,7 @@ button{font-family:inherit;cursor:pointer}
 /* ── packages ── */
 .packages{display:grid;grid-template-columns:1fr;gap:1.1rem;align-items:stretch}
 @media(min-width:800px){.packages{grid-template-columns:1fr 1fr}}
+@media(min-width:960px){.packages--seating{grid-template-columns:1fr 1fr 1fr}}
 .package{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:2.1rem 1.7rem 1.8rem;display:flex;flex-direction:column;position:relative;transition:.35s}
 .package:hover{transform:translateY(-5px);box-shadow:var(--shadow-soft)}
 .package--featured{background:var(--ink);border-color:var(--ink);color:#f4ece6}
@@ -138,6 +139,12 @@ button{font-family:inherit;cursor:pointer}
 .package--featured .package__rule{color:#d9cec3}
 .package .btn{padding:.85rem 1rem;font-size:.68rem;margin-top:auto}
 .children{margin-top:4.5rem;scroll-margin-top:5rem}
+.zones{max-width:760px;margin:1.4rem auto 0;display:flex;flex-direction:column;gap:.6rem}
+.zone{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:.85rem 1.1rem}
+.zone summary{cursor:pointer;font-size:.92rem;line-height:1.45}
+.zone summary strong{font-family:var(--serif);font-size:1.25rem;font-weight:600}
+.zone ul{margin:.7rem 0 .2rem;padding-left:1.15rem;font-size:.84rem;color:var(--ink-soft);line-height:1.5}
+.booking__minimum{font-size:.84rem;line-height:1.45;margin:.7rem 0 0;color:var(--rose-deep)}
 .package--featured .btn--ghost{border-color:#c9b8a4;color:#f4ece6}
 .package--featured .btn--ghost:hover{background:var(--gold);border-color:var(--gold);color:#fff}
 

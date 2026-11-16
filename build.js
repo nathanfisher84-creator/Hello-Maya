@@ -28,16 +28,16 @@ const COPY = [
 /* ── load the same data the browser uses ── */
 const sandbox = {};
 vm.createContext(sandbox);
-const { BUSINESS, ITEMS, PACKAGES, POLICY, FAQ, INSTAGRAM_PHOTOS, SPACE, KIDS_AGE_NOTE, CONFIRMATION, R } = vm.runInContext(
+const { BUSINESS, ITEMS, PACKAGES, POLICY, FAQ, INSTAGRAM_PHOTOS, SPACE, KIDS_AGE_NOTE, CONFIRMATION, DELIVERY_ZONES, TABLEWARE_PER_GUEST, livePackages, R } = vm.runInContext(
   ["js/data.js", "js/render.js"].map(f => fs.readFileSync(f, "utf8")).join("\n;\n") +
-    "\n;({ BUSINESS, ITEMS, PACKAGES, POLICY, FAQ, INSTAGRAM_PHOTOS, SPACE, KIDS_AGE_NOTE, CONFIRMATION, R: HelloMayaRender })",
+    "\n;({ BUSINESS, ITEMS, PACKAGES, POLICY, FAQ, INSTAGRAM_PHOTOS, SPACE, KIDS_AGE_NOTE, CONFIRMATION, DELIVERY_ZONES, TABLEWARE_PER_GUEST, livePackages, R: HelloMayaRender })",
   sandbox
 );
 const SITE = BUSINESS.site;
 const today = new Date().toISOString().slice(0, 10);
 const FONT_HREF = "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500;600&display=swap";
 const SAME_AS = "https://instagram.com/hellomaya_dxb";
-const ALLOWED_PRICES = new Set([...ITEMS.map(i => i.price), ...PACKAGES.map(p => p.price)]);
+const ALLOWED_PRICES = new Set([...ITEMS.map(i => i.price), ...livePackages().map(p => p.price)]);
 
 /* ── pre-render ── */
 function fillId(html, id, inner) {
@@ -52,12 +52,14 @@ function fillAttr(html, attr, text) {
 
 function prerender(html) {
   html = fillAttr(html, "data-delivery-copy", BUSINESS.deliveryRule);
+  html = fillAttr(html, "data-minimum-copy", BUSINESS.minimumOrder);
   html = fillAttr(html, "data-rental-copy", BUSINESS.rentalNote);
   html = fillAttr(html, "data-response-copy", BUSINESS.responseNote);
   html = fillId(html, "heroFromPrice", R.AED(R.adultFrom()));
   html = fillId(html, "wallSpace", SPACE.flowerWall);
-  html = fillId(html, "packagesGrid", PACKAGES.filter(p => !p.children).map(R.packageCard).join(""));
-  html = fillId(html, "kidsGrid", PACKAGES.filter(p => p.children).map(R.packageCard).join(""));
+  html = fillId(html, "packagesGrid", livePackages().filter(p => !p.children).map(R.packageCard).join(""));
+  html = fillId(html, "kidsGrid", livePackages().filter(p => p.children).map(R.packageCard).join(""));
+  html = fillId(html, "deliveryZones", R.deliveryZonesMarkup());
   html = fillId(html, "igTrack", R.igTiles());
   html = fillId(html, "faqList", R.faqMarkup());
   html = fillId(html, "termsBody", R.termsMarkup());
@@ -86,13 +88,13 @@ function pkgById(id) {
 }
 
 function priceRange() {
-  const min = Math.min(...ITEMS.map(i => i.price), ...PACKAGES.map(p => p.price));
-  const max = Math.max(...ITEMS.map(i => i.price), ...PACKAGES.map(p => p.price));
+  const prices = [...ITEMS.map(i => i.price), ...livePackages().map(p => p.price)];
+  const min = Math.min(...prices);
+  const max = Math.max(...prices);
   return `AED ${min.toLocaleString("en-US")}–${max.toLocaleString("en-US")}`;
 }
 
-/* Delivery cost is the sentence in BUSINESS.deliveryRule: free in Damac Hills 2,
-   AED 150 elsewhere in Dubai. That is two rates, so shippingDetails lists both.
+/* Delivery cost is the four Dubai zones in BUSINESS.deliveryRule.
    No handling time or transit time is published, so deliveryTime is omitted.
    Pieces are collected by the business at the end of the rental. schema.org has
    no return method for collection by the business (ReturnByMail, ReturnInStore
@@ -101,24 +103,21 @@ function priceRange() {
    omitted. Collection is not charged again, so the return fee is FreeReturn. */
 const PRICE_VALID_FROM = "2026-10-21";
 const PRICE_VALID_UNTIL = "2027-12-31";
-const COLLECTION_FEE_SENTENCE = "That fee covers one delivery and one collection, so collection is not charged again.";
-const COLLECTION_SENTENCE = "We dismantle and collect at the end of the rental.";
+const COLLECTION_FEE_SENTENCE = "That fee covers one delivery and one collection.";
 const COLLECTION_TIME_SENTENCE = "We agree the collection time when the booking is confirmed.";
 
 function deliveryTerms() {
-  const free = "Free delivery in Damac Hills 2.";
-  const paid = `AED ${BUSINESS.deliveryFeeDubai} elsewhere in Dubai.`;
-  if (!BUSINESS.deliveryRule.startsWith(`${free} ${paid}`)) {
-    throw new Error("shippingDetails must quote BUSINESS.deliveryRule");
-  }
-  if (!BUSINESS.deliveryRule.includes(COLLECTION_FEE_SENTENCE) || !BUSINESS.deliveryRule.includes(COLLECTION_SENTENCE)) {
+  if (!BUSINESS.deliveryRule.includes(COLLECTION_FEE_SENTENCE)) {
     throw new Error("Delivery rule no longer states that collection is included");
+  }
+  if (!Array.isArray(DELIVERY_ZONES) || DELIVERY_ZONES.map(zone => zone.fee).join(",") !== "0,150,250,350") {
+    throw new Error("Delivery zones must be the four Dubai fees");
   }
   const point = POLICY.points.find(p => p.title === "Delivery, rental time and collection");
   if (!point || !point.body.includes(COLLECTION_TIME_SENTENCE) || !point.body.includes(BUSINESS.deliveryRule)) {
     throw new Error("Rental terms no longer state collection by the business");
   }
-  return { free, paid };
+  return DELIVERY_ZONES;
 }
 
 function shippingDestination(name) {
@@ -132,28 +131,20 @@ function shippingDestination(name) {
 }
 
 function merchantOfferFields() {
-  const terms = deliveryTerms();
+  const zones = deliveryTerms();
   return {
     validFrom: PRICE_VALID_FROM,
-    shippingDetails: [
-      {
-        "@type": "OfferShippingDetails",
-        name: terms.free.replace(/\.$/, ""),
-        shippingDestination: shippingDestination("Damac Hills 2"),
-        shippingRate: { "@type": "MonetaryAmount", value: 0, currency: "AED" },
-      },
-      {
-        "@type": "OfferShippingDetails",
-        name: terms.paid.replace(/\.$/, ""),
-        shippingDestination: shippingDestination(),
-        shippingRate: { "@type": "MonetaryAmount", value: BUSINESS.deliveryFeeDubai, currency: "AED" },
-      },
-    ],
+    shippingDetails: zones.map(zone => ({
+      "@type": "OfferShippingDetails",
+      name: `${zone.name}: AED ${zone.fee}`,
+      shippingDestination: shippingDestination(zone.name),
+      shippingRate: { "@type": "MonetaryAmount", value: zone.fee, currency: "AED" },
+    })),
     hasMerchantReturnPolicy: {
       "@type": "MerchantReturnPolicy",
       applicableCountry: "AE",
       returnFees: "https://schema.org/FreeReturn",
-      description: `${COLLECTION_SENTENCE} ${COLLECTION_FEE_SENTENCE} ${COLLECTION_TIME_SENTENCE}`,
+      description: `${COLLECTION_FEE_SENTENCE} ${COLLECTION_TIME_SENTENCE}`,
     },
   };
 }
@@ -228,7 +219,7 @@ function businessNode() {
       "@type": "OfferCatalog",
       name: "Party rentals",
       itemListElement: [
-        ...PACKAGES.map(p => ({
+        ...livePackages().map(p => ({
           "@type": "Offer",
           price: p.price,
           priceCurrency: "AED",
@@ -392,23 +383,19 @@ function rentalPages() {
   const kidsChair = itemById("chair-kids");
   const adultTable = itemById("table-adult");
   const kidsTable = itemById("table-kids");
-  const grand = pkgById("pkg4");
   const essentials = pkgById("pkg1");
   const styled = pkgById("pkg2");
   const signature = pkgById("pkg3");
   const photo = pkgById("pkg-photo");
-  const essentialsWall = pkgById("pkg-essentials-wall");
-  const styledWall = pkgById("pkg-styled-wall");
   const gathering = pkgById("pkg-kids-4");
   const celebration = pkgById("pkg-kids-8");
-  const backdrop = pkgById("pkg-kids-backdrop");
-  const seating = [essentials, styled, signature, essentialsWall, styledWall, grand];
+  const seating = [essentials, styled, signature];
   const book = `Check availability on this site. The form opens WhatsApp with your enquiry. We reply with a confirmed quote. ${CONFIRMATION.half} ${CONFIRMATION.full} ${CONFIRMATION.weekend} ${CONFIRMATION.held}`;
 
   const flowerFaqs = [
     {
       q: "How much does a flower wall cost to rent in Dubai?",
-      a: `Our flower walls are ${R.AED(blush.price)} each on their own, with setup included. ${blush.name.replace("Flower Wall — ", "")} and ${white.name.replace("Flower Wall — ", "")} are the same price. Adding a flower wall to a seating package is ${R.AED(blush.addonPrice)}.`,
+      a: `Our flower walls are ${R.AED(blush.price)} each on their own, with setup included. ${blush.name.replace("Flower Wall — ", "")} and ${white.name.replace("Flower Wall — ", "")} are the same price. ${BUSINESS.wallOffer}`,
     },
     {
       q: "How big is the flower wall?",
@@ -416,7 +403,7 @@ function rentalPages() {
     },
     {
       q: "Does a package include a flower wall?",
-      a: `Wall packages include one backdrop, in the colour you choose. ${photo.name} is ${R.AED(photo.price)}. ${essentialsWall.name} is ${R.AED(essentialsWall.price)}. ${styledWall.name} is ${R.AED(styledWall.price)}. ${grand.name} is ${R.AED(grand.price)}. ${backdrop.name} is ${R.AED(backdrop.price)}. Adding a flower wall to a seating package is ${R.AED(blush.addonPrice)}. A wall on its own, or with individual pieces, is ${R.AED(blush.price)}.`,
+      a: `${photo.name} is ${R.AED(photo.price)} and includes one wall and one covered table. ${BUSINESS.wallOffer}`,
     },
     {
       q: "Do you deliver the flower wall?",
@@ -439,7 +426,7 @@ function rentalPages() {
     },
     {
       q: "How many chairs are in a package?",
-      a: `${seating.map(p => p.name).join(", ").replace(/, ([^,]+)$/, " and $1")} each include 16 white Chiavari chairs with cushioned seats. ${photo.name} has no chairs. ${gathering.name} includes 4 children's chairs for ${R.AED(gathering.price)}. ${celebration.name} includes 8 children's chairs for ${R.AED(celebration.price)}. ${backdrop.name} includes 8 children's chairs and one flower wall for ${R.AED(backdrop.price)}. Children's chairs have no cushion.`,
+      a: `${seating.map(p => p.name).join(", ").replace(/, ([^,]+)$/, " and $1")} each include 16 white Chiavari chairs with cushioned seats. ${photo.name} has no chairs. ${gathering.name} includes 4 children's chairs for ${R.AED(gathering.price)}. ${celebration.name} includes 8 children's chairs for ${R.AED(celebration.price)}. Children's chairs have no cushion.`,
     },
     {
       q: "Do you deliver chairs in Dubai?",
@@ -462,11 +449,11 @@ function rentalPages() {
     },
     {
       q: "Which packages include tables?",
-      a: seating.map(p => `${p.name} is ${R.AED(p.price)} and includes 2 adult tables.`).join(" ") + ` ${photo.name} is ${R.AED(photo.price)} and includes 1 covered cake or photo table. ${gathering.name} includes 1 children's table. ${celebration.name} and ${backdrop.name} include 2 children's tables.`,
+      a: seating.map(p => `${p.name} is ${R.AED(p.price)} and includes 2 adult tables.`).join(" ") + ` ${photo.name} is ${R.AED(photo.price)} and includes 1 covered cake or photo table. ${gathering.name} includes 1 children's table. ${celebration.name} includes 2 children's tables.`,
     },
     {
       q: "Is tableware included?",
-      a: `${signature.name} (${R.AED(signature.price)}) and ${grand.name} (${R.AED(grand.price)}) include dinner and dessert plates, cutlery, wine cups, and napkins with rings, for 16 chairs. ${essentials.name} is chairs and covered tables only.`,
+      a: `${signature.name} (${R.AED(signature.price)}) includes dinner and dessert plates, cutlery, wine cups, and napkins with rings, for 16 chairs. Tableware is AED ${TABLEWARE_PER_GUEST} a guest. ${essentials.name} is chairs and covered tables only.`,
     },
     {
       q: "How do I book tables?",
@@ -477,7 +464,7 @@ function rentalPages() {
   const kidsFaqs = [
     {
       q: "How much is a kids' party rental?",
-      a: `${gathering.name} is ${R.AED(gathering.price)} for ${gathering.summary}. ${celebration.name} is ${R.AED(celebration.price)} for ${celebration.summary}. ${backdrop.name} is ${R.AED(backdrop.price)} for ${backdrop.summary}. Little Gathering and Little Celebration are kids' chairs and tables at their standard rates, with no bundle mark-up.`,
+      a: `${gathering.name} is ${R.AED(gathering.price)} for ${gathering.summary}. ${celebration.name} is ${R.AED(celebration.price)} for ${celebration.summary}. Little Gathering and Little Celebration are kids' chairs and tables at their standard rates, with no bundle mark-up.`,
     },
     {
       q: "Do the children's chairs have cushions?",
@@ -512,10 +499,6 @@ function rentalPages() {
         itemProduct(blush, abs(PRODUCT_PAGE[blush.id]), PRODUCT_IMAGE[blush.id]),
         itemProduct(white, abs(PRODUCT_PAGE[white.id]), PRODUCT_IMAGE[white.id]),
         packageProduct(photo, abs("flower-walls/"), "assets/img/setup-flowerwall-table.webp"),
-        packageProduct(essentialsWall, abs("flower-walls/"), "assets/img/setup-flowerwall-table.webp"),
-        packageProduct(styledWall, abs("flower-walls/"), "assets/img/setup-flowerwall-table.webp"),
-        packageProduct(grand, abs("flower-walls/"), "assets/img/setup-flowerwall-table.webp"),
-        packageProduct(backdrop, abs("flower-walls/"), "assets/img/setup-kids-safari.webp"),
       ],
       main: `
         <p class="hero__sub">Freestanding artificial flower walls for birthdays, baby showers and photo corners. We bring the wall, set it up, and collect it after.</p>
@@ -525,14 +508,14 @@ function rentalPages() {
         </div>`,
       body: `
         ${facts([
-          ["Price", `${R.AED(blush.price)} per wall on its own. Adding a flower wall to a seating package is ${R.AED(blush.addonPrice)}. Setup is included.`],
+          ["Price", BUSINESS.wallOffer + " Setup is included."],
           ["Size", SPACE.flowerWall],
           ["Blush Pink", blush.detail],
           ["White Rose Garden", white.detail],
         ])}
         <div class="prose">
-          <p>Each wall is ${R.AED(blush.price)} on its own. Adding a flower wall to a seating package is ${R.AED(blush.addonPrice)}. ${blush.detail} ${white.detail}</p>
-          <p>Wall packages include one backdrop, in the colour you choose. ${photo.name} is ${R.AED(photo.price)}. ${essentialsWall.name} is ${R.AED(essentialsWall.price)}. ${styledWall.name} is ${R.AED(styledWall.price)}. ${grand.name} is ${R.AED(grand.price)}. ${backdrop.name} is ${R.AED(backdrop.price)}.</p>
+          <p>${BUSINESS.wallOffer} ${blush.detail} ${white.detail}</p>
+          <p>${photo.name} is ${R.AED(photo.price)}. ${photo.summary}.</p>
           <p>${BUSINESS.deliveryRule}</p>
           <p>${BUSINESS.rentalNote}</p>
           <p>People book a wall for birthdays, engagements, baby showers, bridal showers, christenings, cake tables, photo corners and corporate events.</p>
@@ -599,12 +582,12 @@ function rentalPages() {
           ["Adult table", `${SPACE.tableAdult} ${R.AED(adultTable.price)} each.`],
           ["Children's table", `${SPACE.tableKids} ${R.AED(kidsTable.price)} each.`],
           ["Collections", "The 16-chair collections use two adult tables."],
-          ["Tableware", `${signature.name} and ${grand.name} add plates, cutlery, wine cups and napkins with rings.`],
+          ["Tableware", `${signature.name} adds plates, cutlery, wine cups and napkins with rings. Tableware is AED ${TABLEWARE_PER_GUEST} a guest.`],
         ])}
         <div class="prose">
           <p>${SPACE.tableAdult} It is ${R.AED(adultTable.price)} per table.</p>
           <p>${SPACE.tableKids} It is ${R.AED(kidsTable.price)} per table. Children's sets are on the <a href="/kids-party-rentals/">kids' party rentals</a> page.</p>
-          <p>${styled.name} is ${R.AED(styled.price)} and adds table décor: runners, florals and finishing touches. ${signature.name} is ${R.AED(signature.price)}. ${grand.name} is ${R.AED(grand.price)}. Both add place settings for 16 chairs. ${essentialsWall.name} is ${R.AED(essentialsWall.price)}. ${styledWall.name} is ${R.AED(styledWall.price)}. ${photo.name} is ${R.AED(photo.price)}: one flower wall and one covered cake or photo table, with no chairs, décor or place settings.</p>
+          <p>${styled.name} is ${R.AED(styled.price)} and adds table décor: runners, florals and finishing touches. ${signature.name} is ${R.AED(signature.price)} and adds place settings for 16 chairs. Tableware is AED ${TABLEWARE_PER_GUEST} a guest. ${photo.name} is ${R.AED(photo.price)}: one flower wall and one covered cake or photo table, with no chairs, décor or place settings.</p>
           <p>${BUSINESS.deliveryRule}</p>
           <p>${BUSINESS.rentalNote}</p>
           <p>See <a href="/chiavari-chairs/">Chiavari chairs</a> and <a href="/flower-walls/">flower walls</a>, or <a href="/#book">check availability</a>.</p>
@@ -618,7 +601,7 @@ function rentalPages() {
       slug: "kids-party-rentals",
       path: "/kids-party-rentals/",
       title: "Kids' Party Rentals in Dubai | Hello Maya Events",
-      description: `Kids' party rentals in Dubai. Children's Chiavari chairs have no cushion. ${gathering.name} is ${R.AED(gathering.price)} and seats 4. ${celebration.name} is ${R.AED(celebration.price)} and seats 8. ${backdrop.name} is ${R.AED(backdrop.price)} and seats 8.`,
+      description: `Kids' party rentals in Dubai. Children's Chiavari chairs have no cushion. ${gathering.name} is ${R.AED(gathering.price)} and seats 4. ${celebration.name} is ${R.AED(celebration.price)} and seats 8.`,
       h1: "Kids' party rentals in Dubai",
       eyebrow: "Kids' parties · Dubai",
       image: IMG.kidsPink,
@@ -629,7 +612,6 @@ function rentalPages() {
         itemProduct(kidsTable, abs(PRODUCT_PAGE[kidsTable.id]), PRODUCT_IMAGE[kidsTable.id]),
         packageProduct(gathering, abs(PRODUCT_PAGE[gathering.id]), PRODUCT_IMAGE[gathering.id]),
         packageProduct(celebration, abs(PRODUCT_PAGE[celebration.id]), PRODUCT_IMAGE[celebration.id]),
-        packageProduct(backdrop, abs("kids-party-rentals/"), "assets/img/setup-kids-safari.webp"),
       ],
       main: `
         <p class="hero__sub">Child-sized tables and Chiavari chairs for parties in Dubai. The children's chairs have no cushion. We deliver, set up and collect.</p>
@@ -641,12 +623,11 @@ function rentalPages() {
         ${facts([
           [gathering.name, `${R.AED(gathering.price)}. ${gathering.summary}.`],
           [celebration.name, `${R.AED(celebration.price)}. ${celebration.summary}.`],
-          [backdrop.name, `${R.AED(backdrop.price)}. ${backdrop.summary}. Seats ${backdrop.seats} children.`],
           ["Children's chair", `${R.AED(kidsChair.price)} each. ${kidsChair.detail}`],
           ["Children's table", `${SPACE.tableKids} ${R.AED(kidsTable.price)} each.`],
         ])}
         <div class="prose">
-          <p>Little Gathering and Little Celebration are kids' chairs and tables at their standard rates, with no bundle mark-up. ${gathering.name} is ${gathering.items.map(strip).join(", ")}. ${celebration.name} is ${celebration.items.map(strip).join(", ")}. ${backdrop.name} is ${backdrop.items.map(strip).join(", ")}.</p>
+          <p>Little Gathering and Little Celebration are kids' chairs and tables at their standard rates, with no bundle mark-up. ${gathering.name} is ${gathering.items.map(strip).join(", ")}. ${celebration.name} is ${celebration.items.map(strip).join(", ")}.</p>
           <p>${kidsChair.detail} Adult chairs, with a cushioned seat, are on the <a href="/chiavari-chairs/">Chiavari chairs</a> page.</p>
           <p>${KIDS_AGE_NOTE}</p>
           <p>${BUSINESS.deliveryRule}</p>
@@ -812,11 +793,11 @@ ${pages.map(page => `- ${page.h1}: ${abs(page.path)}`).join("\n")}
 
 ## Flower walls
 
-${ITEMS.filter(i => i.unit === "wall").map(i => `- ${i.name.replace("Flower Wall — ", "")}: ${R.AED(i.price)} on its own. Adding one to a seating package is ${R.AED(i.addonPrice)}. ${i.detail} ${i.spaceNote}`).join("\n")}
+${ITEMS.filter(i => i.unit === "wall").map(i => `- ${i.name.replace("Flower Wall — ", "")}: ${R.AED(i.price)} on its own. ${BUSINESS.wallOffer} ${i.detail} ${i.spaceNote}`).join("\n")}
 
 ## Adult party collections (16 guests)
 
-${PACKAGES.filter(p => !p.children && (p.includes["chair-adult"] || 0) > 0).map(pkgLine).join("\n")}
+${livePackages().filter(p => !p.children && (p.includes["chair-adult"] || 0) > 0).map(pkgLine).join("\n")}
 
 ## Photo corner
 
@@ -824,7 +805,16 @@ ${PACKAGES.filter(p => p.id === "pkg-photo").map(pkgLine).join("\n")}
 
 ## Children's collections
 
-${PACKAGES.filter(p => p.children).map(pkgLine).join("\n")}
+${livePackages().filter(p => p.children).map(pkgLine).join("\n")}
+
+## Minimum order
+
+${BUSINESS.minimumOrder}
+
+## Delivery zones
+
+${DELIVERY_ZONES.map(zone => `- ${zone.name}: AED ${zone.fee}. ${zone.covers} ${zone.communities.join("; ")}.`).join("\n")}
+- ${BUSINESS.outsideDubai}
 
 ## Individual pieces
 
@@ -941,8 +931,8 @@ function assertProductSnippet(product, where) {
 function assertMerchantOffer(offer, where, name) {
   const terms = deliveryTerms();
   const details = offer.shippingDetails;
-  if (!Array.isArray(details) || details.length !== 2) throw new Error(`${where} ${name} shippingDetails`);
-  const [free, paid] = details;
+  if (!Array.isArray(details) || details.length !== 4) throw new Error(`${where} ${name} shippingDetails`);
+  const [free, nearby, central, far] = details;
   for (const detail of details) {
     if (detail["@type"] !== "OfferShippingDetails") throw new Error(`${where} ${name} shipping type`);
     if (detail.deliveryTime) throw new Error(`${where} ${name} must not invent deliveryTime`);
@@ -954,18 +944,23 @@ function assertMerchantOffer(offer, where, name) {
       throw new Error(`${where} ${name} shippingRate`);
     }
   }
-  if (free.name !== terms.free.replace(/\.$/, "") || free.shippingDestination.name !== "Damac Hills 2" || free.shippingRate.value !== 0) {
-    throw new Error(`${where} ${name} free delivery rate`);
-  }
-  if (paid.name !== terms.paid.replace(/\.$/, "") || paid.shippingDestination.name || paid.shippingRate.value !== BUSINESS.deliveryFeeDubai) {
-    throw new Error(`${where} ${name} Dubai delivery rate`);
-  }
+  const expected = [
+    [free, "Local", 0],
+    [nearby, "Nearby", 150],
+    [central, "Central Dubai", 250],
+    [far, "Far side", 350],
+  ];
+  expected.forEach(([detail, zoneName, fee]) => {
+    if (detail.name !== `${zoneName}: AED ${fee}` || detail.shippingDestination.name !== zoneName || detail.shippingRate.value !== fee) {
+      throw new Error(`${where} ${name} ${zoneName} delivery rate`);
+    }
+  });
   const policy = offer.hasMerchantReturnPolicy;
   if (!policy || policy["@type"] !== "MerchantReturnPolicy" || policy.applicableCountry !== "AE") {
     throw new Error(`${where} ${name} hasMerchantReturnPolicy`);
   }
   if (policy.returnFees !== "https://schema.org/FreeReturn") throw new Error(`${where} ${name} returnFees`);
-  if (policy.description !== `${COLLECTION_SENTENCE} ${COLLECTION_FEE_SENTENCE} ${COLLECTION_TIME_SENTENCE}`) {
+  if (policy.description !== `${COLLECTION_FEE_SENTENCE} ${COLLECTION_TIME_SENTENCE}`) {
     throw new Error(`${where} ${name} return policy description`);
   }
   for (const key of ["returnPolicyCategory", "merchantReturnDays", "returnMethod", "returnShippingFeesAmount"]) {

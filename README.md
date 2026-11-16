@@ -24,20 +24,23 @@ table & chair rentals for birthdays, baby showers, brunches and kids' parties.
 
 Everything editable lives in **`js/data.js`**:
 
-- `PACKAGES` — adult collections and the children's collections. Essentials 349,
-  Styled 449, Signature 649, Photo Corner 749, Essentials with Wall 899,
-  Styled with Wall 999, Grand 1,199, Little Gathering 95, Little Celebration 190,
-  Little Backdrop 729. Little Gathering and Little Celebration are the kids'
-  chair and table rates added together.
-- `ITEMS` — à-la-carte items. A flower wall on its own, or with individual
-  pieces, is AED 675. Adding a flower wall to a seating package is AED 550.
-  Chair and table unit prices are the rates the packages build on.
-- `BUSINESS.deliveryRule` — the one delivery sentence used everywhere:
-  free in Damac Hills 2, AED 150 elsewhere in Dubai, collection included.
+- `PACKAGES`: adult collections and the children's collections. Essentials 349,
+  Styled 449, Signature 849, Photo Corner 749, Little Gathering 95,
+  Little Celebration 190. Essentials with Wall, Styled with Wall, The Grand
+  and Little Backdrop stay in the list with `paused: true` and are not shown.
+  Little Gathering and Little Celebration are the kids' chair and table rates
+  added together. Signature tableware is AED 25 a guest.
+- `ITEMS`: à-la-carte items. A flower wall on its own is AED 675. Adding a
+  flower wall to a seating order is AED 395 until 14 January 2027. Chair and
+  table unit prices are the rates the packages build on.
+- `BUSINESS.deliveryRule`: the one delivery sentence used everywhere: free in
+  Damac Hills 2, AED 150 nearby, AED 250 central Dubai, AED 350 far side.
+  `DELIVERY_ZONES` lists the communities. The minimum order is AED 350 in
+  Damac Hills 2 and AED 500 elsewhere, before delivery.
 - `SPACE` — measured sizes in centimetres for the flower walls and tables.
 - `POLICY` — confirmation payment, cancellation, damage and rescheduling terms.
 - Quote math lives in `js/pricing.js` (package inclusions are not charged
-  again). `npm test` covers the Grand flower-wall case.
+  again). `npm test` covers the Photo Corner wall and the AED 395 add-on.
 
 ## SEO and AI search
 

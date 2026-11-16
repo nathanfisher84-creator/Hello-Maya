@@ -103,8 +103,13 @@
   /* ── package cards ── */
   const grid = $("#packagesGrid");
   const kidsGrid = $("#kidsGrid");
-  grid.innerHTML = PACKAGES.filter(p => !p.children).map(R.packageCard).join("");
-  kidsGrid.innerHTML = PACKAGES.filter(p => p.children).map(R.packageCard).join("");
+  grid.innerHTML = livePackages().filter(p => !p.children).map(R.packageCard).join("");
+  kidsGrid.innerHTML = livePackages().filter(p => p.children).map(R.packageCard).join("");
+  const zoneBox = $("#deliveryZones");
+  if (zoneBox) zoneBox.innerHTML = R.deliveryZonesMarkup();
+  document.querySelectorAll("[data-minimum-copy]").forEach(el => {
+    el.textContent = BUSINESS.minimumOrder;
+  });
 
   function onPackagePick(event) {
     const btn = event.target.closest("[data-pick-pkg]");
@@ -137,7 +142,7 @@
         <input type="radio" name="bkPkg" value="" checked>
         <div><div class="bk-pkg__name">No package</div><div class="bk-pkg__detail">I'll choose individual pieces below</div></div>
       </label>
-      ${PACKAGES.map(p => `
+      ${livePackages().map(p => `
         <label class="bk-pkg" data-pkg="${p.id}">
           <input type="radio" name="bkPkg" value="${p.id}">
           <div><div class="bk-pkg__name">${p.name}</div>
@@ -147,7 +152,7 @@
     </div>
     <div class="bk-wall" id="bkWallChoice" hidden>
       <h4>Included flower wall</h4>
-      <p>This collection includes one wall. Choose the colour. It is not charged again. The other colour can be added below as an extra for ${AED(wallChoices[0].price)}.</p>
+      <p>This collection includes one wall. Choose the colour. It is not charged again. ${BUSINESS.wallOffer}</p>
       ${wallChoices.map(wall => `
         <label>
           <input type="radio" name="wallColour" value="${wall.id}">
@@ -161,7 +166,7 @@
         <div class="bk-row">
           <div class="bk-row__info">
             <div class="bk-row__name">${i.name}</div>
-            <div class="bk-row__price">${i.unit === "wall" ? `${AED(i.addonPrice)} added to a seating package · ${AED(i.price)} on its own` : `${AED(i.price)} / ${i.unit}`}</div>
+            <div class="bk-row__price">${i.unit === "wall" ? BUSINESS.wallOffer : `${AED(i.price)} / ${i.unit}`}</div>
             ${i.detail ? `<div class="bk-row__note">${i.detail}</div>` : ""}
             ${i.spaceNote ? `<div class="bk-row__note">${i.spaceNote}</div>` : ""}
           </div>
@@ -183,7 +188,9 @@
     return ITEMS.find(i => i.id === id);
   }
   function wallExtraUnit(item) {
-    return item.price;
+    const pkg = currentPackage();
+    const seating = HelloMayaPricing.orderHasSeating(pkg, state.qty, ITEMS);
+    return seating && item.addonPrice ? item.addonPrice : item.price;
   }
 
   function syncQtyInputs() {
@@ -409,8 +416,10 @@
   /* ── summary & total ── */
   const summaryBox = $("#bookingSummary");
   const locationSel = $("#bkLocation");
-  locationSel.options[0].text = "Damac Hills 2 — free delivery and collection";
-  locationSel.options[1].text = `Elsewhere in Dubai — ${AED(BUSINESS.deliveryFeeDubai)} delivery and collection`;
+  locationSel.innerHTML = DELIVERY_ZONES.map(zone => {
+    const fee = zone.fee ? `${AED(zone.fee)} delivery and collection` : "free delivery and collection";
+    return `<option value="${zone.id}">${zone.name}: ${fee}</option>`;
+  }).join("");
   locationSel.addEventListener("change", renderSummary);
 
   function selectionForQuote() {
@@ -434,7 +443,10 @@
     const deliveryText = quote.delivery
       ? AED(quote.delivery)
       : "Free";
-    const deliveryWhere = quote.delivery ? "Elsewhere in Dubai" : "Damac Hills 2";
+    const deliveryWhere = quote.zone ? quote.zone.name : "Delivery";
+    const minimumNote = quote.belowMinimum
+      ? `<p class="booking__minimum">${BUSINESS.minimumOrder} This selection is ${AED(quote.rental)} before delivery, under the ${AED(quote.minimum)} minimum for ${quote.zone.name}. You can still send the enquiry.</p>`
+      : "";
     summaryBox.innerHTML = `
       <ul>
         ${quote.lines.map(line => `
@@ -442,9 +454,10 @@
             <span>${line.label}</span>
             <span>${line.amount ? AED(line.amount) : "Included"}</span>
           </li>`).join("")}
-        <li><span>Delivery and collection — ${deliveryWhere}</span><span>${deliveryText}</span></li>
+        <li><span>Delivery and collection, ${deliveryWhere}</span><span>${deliveryText}</span></li>
       </ul>
-      <div class="total"><span>Estimated total</span><span>${AED(quote.total)}</span></div>`;
+      <div class="total"><span>Estimated total</span><span>${AED(quote.total)}</span></div>
+      ${minimumNote}`;
   }
   renderSummary();
 
@@ -472,8 +485,9 @@
       `Hi ${BUSINESS.name}! I'd like to check availability for my event.`,
       ``,
       ...quote.lines.map(line => `• ${line.label} — ${line.amount ? AED(line.amount) : "Included"}`),
-      `• Delivery and collection: ${quote.delivery ? AED(quote.delivery) + " (elsewhere in Dubai)" : "Free (Damac Hills 2)"}`,
+      `• Delivery and collection: ${quote.delivery ? AED(quote.delivery) : "Free"} (${quote.zone ? quote.zone.name : "Dubai"})`,
       `Estimated total: ${AED(quote.total)}`,
+      quote.belowMinimum ? `${BUSINESS.minimumOrder} This selection is ${AED(quote.rental)} before delivery, under the ${AED(quote.minimum)} minimum for ${quote.zone.name}.` : null,
       ``,
       `Date: ${dateStr}`,
       `Start time: ${$("#bkTime").value}`,
