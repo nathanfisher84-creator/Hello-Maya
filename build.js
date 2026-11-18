@@ -110,7 +110,7 @@ function deliveryTerms() {
   if (!BUSINESS.deliveryRule.includes(COLLECTION_FEE_SENTENCE)) {
     throw new Error("Delivery rule no longer states that collection is included");
   }
-  if (!Array.isArray(DELIVERY_ZONES) || DELIVERY_ZONES.map(zone => zone.fee).join(",") !== "0,150,250,350") {
+  if (!Array.isArray(DELIVERY_ZONES) || DELIVERY_ZONES.map(zone => zone.fee).join(",") !== "0,150,250,250") {
     throw new Error("Delivery zones must be the four Dubai fees");
   }
   const point = POLICY.points.find(p => p.title === "Delivery, rental time and collection");
@@ -948,7 +948,7 @@ function assertMerchantOffer(offer, where, name) {
     [free, "Local", 0],
     [nearby, "Nearby", 150],
     [central, "Central Dubai", 250],
-    [far, "Far side", 350],
+    [far, "Far side", 250],
   ];
   expected.forEach(([detail, zoneName, fee]) => {
     if (detail.name !== `${zoneName}: AED ${fee}` || detail.shippingDestination.name !== zoneName || detail.shippingRate.value !== fee) {

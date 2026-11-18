@@ -57,7 +57,8 @@ assert.strictEqual(item("chair-kids").price, 10);
 assert.strictEqual(item("table-adult").price, 75);
 assert.strictEqual(item("table-kids").price, 55);
 
-assert.strictEqual(DELIVERY_ZONES.map(zone => zone.fee).join(","), "0,150,250,350");
+assert.strictEqual(DELIVERY_ZONES.map(zone => zone.fee).join(","), "0,150,250,250");
+assert.strictEqual(DELIVERY_ZONES.find(zone => zone.id === "far").fee, 250);
 assert.strictEqual(DELIVERY_ZONES.find(zone => zone.id === "local").minimum, 350);
 assert.strictEqual(DELIVERY_ZONES.find(zone => zone.id === "central").minimum, 500);
 assert.ok(DELIVERY_ZONES.find(zone => zone.id === "nearby").communities.includes("Arabian Ranches 1, 2 and 3 (including Mira, Reem and the other Ranches villages)"));
@@ -65,7 +66,7 @@ assert.ok(DELIVERY_ZONES.find(zone => zone.id === "central").communities.include
 assert.ok(DELIVERY_ZONES.find(zone => zone.id === "far").communities.includes("Palm Jumeirah"));
 assert.ok(BUSINESS.deliveryRule.includes("AED 150 for nearby communities"));
 assert.ok(BUSINESS.deliveryRule.includes("AED 250 for central Dubai"));
-assert.ok(BUSINESS.deliveryRule.includes("AED 350 for the far side of Dubai"));
+assert.ok(BUSINESS.deliveryRule.includes("AED 250 for the far side of Dubai"));
 assert.ok(BUSINESS.minimumOrder.includes("AED 350"));
 assert.ok(BUSINESS.minimumOrder.includes("AED 500"));
 assert.ok(BUSINESS.wallOffer.includes("AED 395"));
@@ -118,7 +119,7 @@ assert.ok(underLocal.lines.length > 0);
 const underElsewhere = quoteDesign("pkg2", {}, "far", false);
 assert.strictEqual(underElsewhere.belowMinimum, true);
 assert.strictEqual(underElsewhere.minimum, 500);
-assert.strictEqual(underElsewhere.delivery, 350);
+assert.strictEqual(underElsewhere.delivery, 250);
 const meets = quoteDesign("pkg3", {}, "nearby", false);
 assert.strictEqual(meets.belowMinimum, false);
 assert.strictEqual(meets.total, 849 + 150);

@@ -11,9 +11,9 @@ const BUSINESS = {
   instagram: "hellomaya_dxb",
   /* One sentence, used everywhere a price is shown. Do not paraphrase
      on the page — the site copies this string into every delivery line. */
-  deliveryRule: "Delivery is free in Damac Hills 2, AED 150 for nearby communities, AED 250 for central Dubai, and AED 350 for the far side of Dubai. That fee covers one delivery and one collection.",
+  deliveryRule: "Delivery is free in Damac Hills 2, AED 150 for nearby communities, AED 250 for central Dubai, and AED 250 for the far side of Dubai. That fee covers one delivery and one collection.",
   /* Short form for price cards. Must say the same thing as deliveryRule. */
-  deliveryShort: "Delivery is free in Damac Hills 2, AED 150 for nearby communities, AED 250 for central Dubai, and AED 350 for the far side of Dubai. That fee covers one delivery and one collection.",
+  deliveryShort: "Delivery is free in Damac Hills 2, AED 150 for nearby communities, AED 250 for central Dubai, and AED 250 for the far side of Dubai. That fee covers one delivery and one collection.",
   minimumOrder: "There is a minimum order of AED 350 for delivery in Damac Hills 2, and AED 500 for delivery elsewhere in Dubai. That minimum is the rental total before delivery.",
   wallOffer: "A flower wall can be added to a seating order for AED 395 until 14 January 2027. A wall on its own stays AED 675.",
   outsideDubai: "Bookings outside Dubai are not accepted.",
@@ -105,7 +105,7 @@ const DELIVERY_ZONES = [
   {
     id: "far",
     name: "Far side",
-    fee: 350,
+    fee: 250,
     minimum: 500,
     covers: "Old Dubai and the north, Palm Jumeirah, and the Jebel Ali and Dubai South side.",
     communities: [

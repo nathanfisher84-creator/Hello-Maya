@@ -34,7 +34,7 @@ Everything editable lives in **`js/data.js`**:
   flower wall to a seating order is AED 395 until 14 January 2027. Chair and
   table unit prices are the rates the packages build on.
 - `BUSINESS.deliveryRule`: the one delivery sentence used everywhere: free in
-  Damac Hills 2, AED 150 nearby, AED 250 central Dubai, AED 350 far side.
+  Damac Hills 2, AED 150 nearby, AED 250 central Dubai, AED 250 far side.
   `DELIVERY_ZONES` lists the communities. The minimum order is AED 350 in
   Damac Hills 2 and AED 500 elsewhere, before delivery.
 - `SPACE` — measured sizes in centimetres for the flower walls and tables.
